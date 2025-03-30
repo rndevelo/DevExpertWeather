@@ -18,16 +18,19 @@ import kotlin.coroutines.resume
 const val DEFAULT_REGION = "Madrid"
 
 suspend fun Context.getRegion(): String {
-    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-    val location = fusedLocationClient.lastLocation()
 
     val geocoder = Geocoder(this)
-    val addresses = location?.let {
+    val addresses = this.getLocation()?.let {
         geocoder.getFromLocationCompat(it.latitude, it.longitude, 1)
     }
 
     val region = addresses?.firstOrNull()?.locality
     return region ?: DEFAULT_REGION
+}
+
+suspend fun Context.getLocation(): Location? {
+    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+    return fusedLocationClient.lastLocation()
 }
 
 @SuppressLint("MissingPermission")

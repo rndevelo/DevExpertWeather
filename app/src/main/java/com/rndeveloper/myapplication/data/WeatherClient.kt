@@ -20,7 +20,7 @@ object WeatherClient {
     }
 
     val instance = Retrofit.Builder()
-        .baseUrl("https://api.weatherstack.com/")
+        .baseUrl("https://api.open-meteo.com/v1/")
         .client(okHttpClient)
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
@@ -33,7 +33,7 @@ object WeatherClient {
             .url(
                 chain.request().url
                     .newBuilder()
-                    .addQueryParameter("access_key", BuildConfig.WS_API_KEY)
+                    .addQueryParameter("appid", BuildConfig.WS_API_KEY)
                     .build()
             ).build()
     )
