@@ -8,6 +8,7 @@ import com.rndeveloper.myapplication.data.WeatherRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ForecastViewModel(
@@ -23,15 +24,18 @@ class ForecastViewModel(
 
     fun onUiReady() {
         viewModelScope.launch {
-            _state.value = UiState(
-                loading = true,
-                cityName = cityName
-            )
-            _state.value = UiState(
-                loading = false,
-                cityName = cityName,
-                weatherForecast = repository.getWeather(lat = lat, lon = lon).forecast
-            )
+            _state.update {
+                it.copy(
+                    loading = true,
+                    cityName = cityName
+                )
+            }
+            _state.update {
+                it.copy(
+                    loading = false,
+                    weatherForecast = repository.getWeather(lat = lat, lon = lon).forecast
+                )
+            }
         }
     }
 
