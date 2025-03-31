@@ -3,8 +3,10 @@ package com.rndeveloper.myapplication.ui.screens.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rndeveloper.myapplication.data.CityInfo
 import com.rndeveloper.myapplication.data.CurrentWeather
 import com.rndeveloper.myapplication.data.WeatherRepository
+import com.rndeveloper.myapplication.ui.screens.forecast.ForecastViewModel.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,14 +29,22 @@ class HomeViewModel : ViewModel() {
                     .getWeather(lat = lat, lon = lon)
                     .current
             )
+        }
+    }
 
-            Log.d("HomeViewModel", "onUiReady: hourly ${repository.getWeather(lat = lat, lon = lon).current.temperature}")
-            Log.d("HomeViewModel", "onUiReady: forecast ${repository.getWeather(lat = lat, lon = lon).forecast.take(3)}")
+    fun onSearchCities(query: String) {
+        viewModelScope.launch {
+            _state.value = UiState(loading = true)
+            _state.value = UiState(
+                loading = false,
+                citiesInfo = repository.searchCities(query = query)
+            )
         }
     }
 
     data class UiState(
         val loading: Boolean = false,
         val currentWeather: CurrentWeather? = null,
+        val citiesInfo: List<CityInfo> = emptyList(),
     )
 }

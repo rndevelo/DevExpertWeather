@@ -1,6 +1,6 @@
 package com.rndeveloper.myapplication.data
 
-class WeatherRepository {
+class WeatherRepository() {
 
     suspend fun getWeather(lat: Double, lon: Double): Weather =
         WeatherClient
@@ -8,6 +8,14 @@ class WeatherRepository {
             .fetchWeather(lat = lat, lon = lon)
             .toDomainModel()
 
+    suspend fun searchCities(query: String): List<CityInfo> {
+        return try {
+            val response = WeatherClient.instance.searchCities(query)
+            response.results
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
 }
 
 private fun RemoteWeather.toDomainModel(): Weather {

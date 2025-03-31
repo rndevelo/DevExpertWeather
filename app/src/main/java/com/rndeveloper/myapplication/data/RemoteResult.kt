@@ -63,6 +63,19 @@ data class RemoteDailyForecast(
     }
 }
 
+@Serializable
+data class GeoCodingResponse(
+    val results: List<CityInfo>
+)
+
+@Serializable
+data class CityInfo(
+    val name: String,
+    val country: String,
+    val latitude: Double,
+    val longitude: Double
+)
+
 
 data class Weather(
     val current: CurrentWeather,

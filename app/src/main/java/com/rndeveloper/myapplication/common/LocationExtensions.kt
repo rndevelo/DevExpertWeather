@@ -15,17 +15,16 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 
-const val DEFAULT_REGION = "Madrid"
-
-suspend fun Context.getRegion(): String {
+suspend fun Context.getLocalityAndCountry(): String {
 
     val geocoder = Geocoder(this)
     val addresses = this.getLocation()?.let {
         geocoder.getFromLocationCompat(it.latitude, it.longitude, 1)
     }
 
-    val region = addresses?.firstOrNull()?.locality
-    return region ?: DEFAULT_REGION
+    val locality = addresses?.firstOrNull()?.locality
+    val country = addresses?.firstOrNull()?.countryName
+    return "$locality, $country"
 }
 
 suspend fun Context.getLocation(): Location? {

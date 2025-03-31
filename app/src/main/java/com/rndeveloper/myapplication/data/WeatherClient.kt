@@ -3,17 +3,17 @@ package com.rndeveloper.myapplication.data
 import com.rndeveloper.myapplication.BuildConfig
 import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
-import okhttp3.OkHttpClient
+import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.create
-import okhttp3.MediaType.Companion.toMediaType
 
 object WeatherClient {
 
-    val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor { apiKeyAsQuery(it) }
-        .build()
+//    val okHttpClient = OkHttpClient.Builder()
+//        .addInterceptor(loggingInterceptor) // <-- Agregar el interceptor aquí
+//        .addInterceptor { apiKeyAsQuery(it) }
+//        .build()
 
     private val json = Json {
         ignoreUnknownKeys = true
@@ -21,7 +21,7 @@ object WeatherClient {
 
     val instance = Retrofit.Builder()
         .baseUrl("https://api.open-meteo.com/v1/")
-        .client(okHttpClient)
+//        .client(okHttpClient)
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
         .create<WeatherService>()
