@@ -1,7 +1,8 @@
 package com.rndeveloper.myapplication.ui.screens.home
 
 import android.Manifest
-import android.widget.Toast
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,22 +27,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.rndeveloper.myapplication.R
 import com.rndeveloper.myapplication.common.PermissionRequestEffect
-import com.rndeveloper.myapplication.common.getLocation
 import com.rndeveloper.myapplication.common.getLocalityAndCountry
+import com.rndeveloper.myapplication.common.getLocation
 import com.rndeveloper.myapplication.data.CityInfo
 import com.rndeveloper.myapplication.data.CurrentWeather
 import com.rndeveloper.myapplication.ui.components.LoadingAnimation
@@ -50,21 +56,36 @@ import com.rndeveloper.myapplication.ui.screens.home.components.SearchContent
 import com.rndeveloper.myapplication.ui.theme.DevExpertWeatherTheme
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(vm: HomeViewModel = viewModel(), onForecastClick: (String, String, String) -> Unit) {
+fun HomeScreen(
+    vm: HomeViewModel = viewModel(),
+    onForecastClick: (String, String, String) -> Unit = { _, _, _ -> }
+) {
 
     val ctx = LocalContext.current.applicationContext
     val coroutineScope = rememberCoroutineScope()
     val state by vm.state.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
+    var message by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(state.selectedCityInfo) {
         if (state.selectedCityInfo != null) {
-            vm.onUiReady(
-                lat = state.selectedCityInfo?.latitude!!,
-                lon = state.selectedCityInfo?.longitude!!
+            vm.onAction(
+                HomeAction.OnUiReady(
+                    lat = state.selectedCityInfo?.latitude!!,
+                    lon = state.selectedCityInfo?.longitude!!
+                )
             )
+        }
+    }
+
+    LaunchedEffect(message) {
+        if (message.isNotEmpty()) {
+            snackBarHostState.currentSnackbarData?.dismiss()
+            snackBarHostState.showSnackbar(message)
+            message = ""
         }
     }
 
@@ -73,22 +94,23 @@ fun HomeScreen(vm: HomeViewModel = viewModel(), onForecastClick: (String, String
             if (granted) {
                 ctx.getLocation().let { location ->
                     if (location != null) {
-                        vm.onSelectedCityInfo(
-                            cityInfo = CityInfo().copy(
-                                name = ctx.getLocalityAndCountry().first,
-                                country = ctx.getLocalityAndCountry().second,
-                                latitude = location.latitude,
-                                longitude = location.longitude
+                        vm.onAction(
+                            HomeAction.OnSelectedCityInfo(
+                                cityInfo = CityInfo().copy(
+                                    name = ctx.getLocalityAndCountry().first,
+                                    country = ctx.getLocalityAndCountry().second,
+                                    latitude = location.latitude,
+                                    longitude = location.longitude
+                                )
                             )
                         )
                         return@launch
                     } else {
-                        Toast.makeText(ctx, "No se pudo obtener la ubicación", Toast.LENGTH_SHORT)
-                            .show()
+                        message = "No se pudo obtener la ubicación"
                     }
                 }
             } else {
-                Toast.makeText(ctx, "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show()
+                message = "No se pudo obtener la ubicación"
             }
         }
     }
@@ -106,7 +128,7 @@ fun HomeScreen(vm: HomeViewModel = viewModel(), onForecastClick: (String, String
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                text = { Text("Pronóstico") },
+                text = { Text(stringResource(R.string.home_text_forecast)) },
                 icon = { Text("\uD83D\uDCCA") },
                 onClick = {
                     onForecastClick(
@@ -129,8 +151,7 @@ fun HomeScreen(vm: HomeViewModel = viewModel(), onForecastClick: (String, String
 
         HomeContent(
             state = state,
-            onSearchCity = vm::onSearchCities,
-            onSelectedCityInfo = vm::onSelectedCityInfo,
+            onAction = vm::onAction,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
@@ -142,8 +163,7 @@ fun HomeScreen(vm: HomeViewModel = viewModel(), onForecastClick: (String, String
 @Composable
 fun HomeContent(
     state: HomeViewModel.UiState,
-    onSearchCity: (String) -> Unit,
-    onSelectedCityInfo: (CityInfo) -> Unit,
+    onAction: (HomeAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -162,8 +182,7 @@ fun HomeContent(
         SearchContent(
             keyboardController = keyboardController,
             citiesInfo = state.citiesInfo,
-            onSearchCity = onSearchCity,
-            onSelectedCityInfo = onSelectedCityInfo,
+            onAction = onAction
         )
         Spacer(modifier = Modifier.height(50.dp))
         WeatherMainContent(state.currentWeather)
@@ -202,9 +221,18 @@ private fun WeatherDetailsContent(currentWeather: CurrentWeather?) {
         colors = CardDefaults.cardColors(containerColor = Color.LightGray.copy(alpha = 0.2f))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            WeatherDetailRow(label = "🌡️ Temperatura", "${currentWeather?.temperature}°C")
-            WeatherDetailRow(label = "💧 Humedad", "${currentWeather?.humidity}%")
-            WeatherDetailRow(label = "\uD83D\uDCA8 Viento", "${currentWeather?.windSpeed} km/h")
+            WeatherDetailRow(
+                label = stringResource(R.string.home_text_temperature),
+                "${currentWeather?.temperature}°C"
+            )
+            WeatherDetailRow(
+                label = stringResource(R.string.home_text_humidity),
+                "${currentWeather?.humidity}%"
+            )
+            WeatherDetailRow(
+                label = stringResource(R.string.home_text_wind_speed),
+                "${currentWeather?.windSpeed} km/h"
+            )
         }
     }
 }
@@ -222,10 +250,11 @@ fun WeatherDetailRow(label: String, value: String) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
     DevExpertWeatherTheme {
-//        HomeScreen { -> a, b, c }
+        HomeScreen()
     }
 }

@@ -1,6 +1,7 @@
 package com.rndeveloper.myapplication.ui.screens.forecast
 
-import android.util.Log
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rndeveloper.myapplication.data.DailyForecast
@@ -22,6 +23,7 @@ class ForecastViewModel(
     private val _state = MutableStateFlow(UiState())
     val state: StateFlow<UiState> = _state.asStateFlow()
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun onUiReady() {
         viewModelScope.launch {
             _state.update {

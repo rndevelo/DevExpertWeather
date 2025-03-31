@@ -1,7 +1,11 @@
 package com.rndeveloper.myapplication.data
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+
 class WeatherRepository() {
 
+    @RequiresApi(Build.VERSION_CODES.O)
     suspend fun getWeather(lat: Double, lon: Double): Weather =
         WeatherClient
             .instance
@@ -18,6 +22,7 @@ class WeatherRepository() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 private fun RemoteWeather.toDomainModel(): Weather {
     return Weather(
         current = this.current.toCurrentWeather(),

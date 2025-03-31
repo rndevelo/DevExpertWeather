@@ -19,17 +19,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import com.rndeveloper.myapplication.R
 import com.rndeveloper.myapplication.data.CityInfo
+import com.rndeveloper.myapplication.ui.screens.home.HomeAction
 
 @Composable
 fun SearchContent(
     keyboardController: SoftwareKeyboardController?,
     citiesInfo: List<CityInfo>,
-    onSearchCity: (String) -> Unit,
-    onSelectedCityInfo: (CityInfo) -> Unit,
+    onAction: (HomeAction) -> Unit,
 ) {
     var cityName by remember { mutableStateOf("") }
     var suggestions by remember { mutableStateOf(emptyList<CityInfo>()) }
@@ -39,10 +41,10 @@ fun SearchContent(
             value = cityName,
             onValueChange = { newText ->
                 cityName = newText
-                onSearchCity(newText)
+                onAction(HomeAction.OnSearchCities(newText))
                 suggestions = citiesInfo
             },
-            label = { Text("Buscar ciudad") },
+            label = { Text(stringResource(R.string.home_text_search_city)) },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Search,
@@ -62,12 +64,14 @@ fun SearchContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(onClick = {
-                            onSelectedCityInfo(
-                                CityInfo().copy(
-                                    name = city.name,
-                                    country = city.country,
-                                    latitude = city.latitude,
-                                    longitude = city.longitude
+                            onAction(
+                                HomeAction.OnSelectedCityInfo(
+                                    CityInfo().copy(
+                                        name = city.name,
+                                        country = city.country,
+                                        latitude = city.latitude,
+                                        longitude = city.longitude
+                                    )
                                 )
                             )
                             suggestions = emptyList()

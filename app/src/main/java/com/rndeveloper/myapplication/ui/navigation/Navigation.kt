@@ -31,7 +31,7 @@ fun Navigation() {
             arguments = listOf(
                 navArgument(NavArgs.CityName.key) { type = NavType.StringType },
                 navArgument(NavArgs.Lat.key) { type = NavType.StringType },  // Double no es soportado, usa String
-                navArgument(NavArgs.Long.key) { type = NavType.StringType }
+                navArgument(NavArgs.Long.key) { type = NavType.StringType }  // Double no es soportado, usa String
             )
         ) { backStackEntry ->
             val cityName = requireNotNull(backStackEntry.arguments?.getString(NavArgs.CityName.key))

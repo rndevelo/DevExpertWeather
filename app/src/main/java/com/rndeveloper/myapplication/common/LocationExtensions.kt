@@ -10,7 +10,6 @@ import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.rndeveloper.myapplication.data.CityInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext

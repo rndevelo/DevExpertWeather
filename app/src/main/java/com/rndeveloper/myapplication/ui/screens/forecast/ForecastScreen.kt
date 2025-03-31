@@ -1,5 +1,7 @@
 package com.rndeveloper.myapplication.ui.screens.forecast
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,14 +31,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rndeveloper.myapplication.R
 import com.rndeveloper.myapplication.data.DailyForecast
 import com.rndeveloper.myapplication.ui.components.LoadingAnimation
 import com.rndeveloper.myapplication.ui.components.TopAppBar
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForecastScreen(
@@ -57,7 +62,7 @@ fun ForecastScreen(
                 title = {
                     TopAppBar(
                         title = state.cityName,
-                        subtitle = "Pronóstico de 7 días"
+                        subtitle = stringResource(R.string.forecast_text_7_day_forecast)
                     )
                 },
                 navigationIcon = {
@@ -94,23 +99,6 @@ fun ForecastScreen(
             }
         }
     }
-
-//    LazyColumn {
-//        item {
-//            Text(text = "📍 Ubicación")
-//            Text(text = "🌡️ Temp. actual")
-//            Text(text = "💧 Humedad")
-//            Text(text = "🌧️ Precipitación")
-//            Text(text = "🔽 Pronóstico de los próximos 7 días:")
-//        }
-//
-//        items(state.weatherForecast) { forecast ->
-//            Text(
-//                text = "📅 ${forecast.date} → Max: ${forecast.maxTemperature}°C, Min: ${forecast.minTemperature}°C, 🌧️ Precipitación: ${forecast.precipitation}mm"
-//            )
-//        }
-//    }
-
 }
 
 @Composable
@@ -146,11 +134,11 @@ fun WeatherForecastItem(forecast: DailyForecast) {
                 Text(text = forecast.weatherIcon, fontSize = 35.sp)
                 Column {
                     Text(
-                        text = "🌡️ Max: ${forecast.maxTemperature}°C",
+                        text = stringResource(R.string.forecast_text_max_c, forecast.maxTemperature),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
-                        text = "🌡️ Min: ${forecast.minTemperature}°C",
+                        text = stringResource(R.string.forecast_text_min_c, forecast.minTemperature),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
