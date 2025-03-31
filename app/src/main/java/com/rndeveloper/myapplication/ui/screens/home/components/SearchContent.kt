@@ -2,7 +2,6 @@ package com.rndeveloper.myapplication.ui.screens.home.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,7 +18,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -31,7 +29,7 @@ fun SearchContent(
     keyboardController: SoftwareKeyboardController?,
     citiesInfo: List<CityInfo>,
     onSearchCity: (String) -> Unit,
-    onCitySelected: (String, Double, Double) -> Unit,
+    onSelectedCityInfo: (CityInfo) -> Unit,
 ) {
     var cityName by remember { mutableStateOf("") }
     var suggestions by remember { mutableStateOf(emptyList<CityInfo>()) }
@@ -59,32 +57,26 @@ fun SearchContent(
 
         LazyColumn {
             items(suggestions) { city ->
-                CityItem(
-                    city = city,
-                    onClick = {
-                        onCitySelected(
-                            "${city.name}, ${city.country}",
-                            city.latitude,
-                            city.longitude
-                        )
-                        suggestions = emptyList()
-                        keyboardController?.hide()
-                        cityName = ""
-                    }
+                Text(
+                    text = "📍 ${city.name}, ${city.country}",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = {
+                            onSelectedCityInfo(
+                                CityInfo().copy(
+                                    name = city.name,
+                                    country = city.country,
+                                    latitude = city.latitude,
+                                    longitude = city.longitude
+                                )
+                            )
+                            suggestions = emptyList()
+                            keyboardController?.hide()
+                            cityName = ""
+                        })
+                        .padding(12.dp)
                 )
             }
         }
-    }
-}
-
-@Composable
-fun CityItem(city: CityInfo, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(12.dp)
-    ) {
-        Text(text = "📍 ${city.name}, ${city.country}")
     }
 }

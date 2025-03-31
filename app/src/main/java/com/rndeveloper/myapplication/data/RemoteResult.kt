@@ -74,7 +74,14 @@ data class CityInfo(
     val country: String,
     val latitude: Double,
     val longitude: Double
-)
+){
+    constructor() : this(
+        name = "",
+        country = "",
+        latitude = 40.71,
+        longitude = 0.0,
+    )
+}
 
 
 data class Weather(

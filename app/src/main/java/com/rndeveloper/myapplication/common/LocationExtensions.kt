@@ -10,12 +10,13 @@ import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.rndeveloper.myapplication.data.CityInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 
-suspend fun Context.getLocalityAndCountry(): String {
+suspend fun Context.getLocalityAndCountry(): Pair<String, String> {
 
     val geocoder = Geocoder(this)
     val addresses = this.getLocation()?.let {
@@ -24,7 +25,7 @@ suspend fun Context.getLocalityAndCountry(): String {
 
     val locality = addresses?.firstOrNull()?.locality
     val country = addresses?.firstOrNull()?.countryName
-    return "$locality, $country"
+    return ((locality to country) as Pair<String, String>)
 }
 
 suspend fun Context.getLocation(): Location? {

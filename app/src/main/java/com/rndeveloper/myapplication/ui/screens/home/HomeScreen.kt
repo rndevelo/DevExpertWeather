@@ -12,22 +12,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,6 +42,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rndeveloper.myapplication.common.PermissionRequestEffect
 import com.rndeveloper.myapplication.common.getLocation
 import com.rndeveloper.myapplication.common.getLocalityAndCountry
+import com.rndeveloper.myapplication.data.CityInfo
 import com.rndeveloper.myapplication.data.CurrentWeather
 import com.rndeveloper.myapplication.ui.components.LoadingAnimation
 import com.rndeveloper.myapplication.ui.components.TopAppBar
@@ -56,25 +57,35 @@ fun HomeScreen(vm: HomeViewModel = viewModel(), onForecastClick: (String, String
     val ctx = LocalContext.current.applicationContext
     val coroutineScope = rememberCoroutineScope()
     val state by vm.state.collectAsState()
+    val snackBarHostState = remember { SnackbarHostState() }
 
-    var cityName by remember { mutableStateOf("") }
-    var lat by remember { mutableStateOf("") }
-    var lon by remember { mutableStateOf("") }
+    LaunchedEffect(state.selectedCityInfo) {
+        if (state.selectedCityInfo != null) {
+            vm.onUiReady(
+                lat = state.selectedCityInfo?.latitude!!,
+                lon = state.selectedCityInfo?.longitude!!
+            )
+        }
+    }
 
     PermissionRequestEffect(permission = Manifest.permission.ACCESS_COARSE_LOCATION) { granted ->
         coroutineScope.launch {
             if (granted) {
                 ctx.getLocation().let { location ->
-                    lat = location?.latitude.toString()
-                    lon = location?.longitude.toString()
-
-                    vm.onUiReady(
-                        lat = location?.latitude ?: 40.71,
-                        lon = location?.longitude ?: 0.0
-                    )
-                }
-                ctx.getLocalityAndCountry().let { location ->
-                    cityName = ctx.getLocalityAndCountry()
+                    if (location != null) {
+                        vm.onSelectedCityInfo(
+                            cityInfo = CityInfo().copy(
+                                name = ctx.getLocalityAndCountry().first,
+                                country = ctx.getLocalityAndCountry().second,
+                                latitude = location.latitude,
+                                longitude = location.longitude
+                            )
+                        )
+                        return@launch
+                    } else {
+                        Toast.makeText(ctx, "No se pudo obtener la ubicación", Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 }
             } else {
                 Toast.makeText(ctx, "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show()
@@ -86,7 +97,10 @@ fun HomeScreen(vm: HomeViewModel = viewModel(), onForecastClick: (String, String
         topBar = {
             TopAppBar(
                 title = { // Ubicación y fecha
-                    TopAppBar(title = cityName, subtitle = state.currentWeather?.date ?: "")
+                    TopAppBar(
+                        title = "${state.selectedCityInfo?.name}, ${state.selectedCityInfo?.country}",
+                        subtitle = state.currentWeather?.date ?: ""
+                    )
                 },
             )
         },
@@ -94,9 +108,16 @@ fun HomeScreen(vm: HomeViewModel = viewModel(), onForecastClick: (String, String
             ExtendedFloatingActionButton(
                 text = { Text("Pronóstico") },
                 icon = { Text("\uD83D\uDCCA") },
-                onClick = { onForecastClick(cityName, lat, lon) },
+                onClick = {
+                    onForecastClick(
+                        state.selectedCityInfo?.name ?: "",
+                        state.selectedCityInfo?.latitude.toString(),
+                        state.selectedCityInfo?.longitude.toString()
+                    )
+                },
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
     ) { paddingValues ->
 
         LoadingAnimation(
@@ -109,12 +130,7 @@ fun HomeScreen(vm: HomeViewModel = viewModel(), onForecastClick: (String, String
         HomeContent(
             state = state,
             onSearchCity = vm::onSearchCities,
-            onCitySelected = { newCityName, newLat, newLon ->
-                cityName = newCityName
-                lat = newLat.toString()
-                lat = newLon.toString()
-                vm.onUiReady(lat = newLat, lon = newLon)
-            },
+            onSelectedCityInfo = vm::onSelectedCityInfo,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
@@ -123,12 +139,11 @@ fun HomeScreen(vm: HomeViewModel = viewModel(), onForecastClick: (String, String
     }
 }
 
-
 @Composable
 fun HomeContent(
     state: HomeViewModel.UiState,
     onSearchCity: (String) -> Unit,
-    onCitySelected: (String, Double, Double) -> Unit,
+    onSelectedCityInfo: (CityInfo) -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -148,7 +163,7 @@ fun HomeContent(
             keyboardController = keyboardController,
             citiesInfo = state.citiesInfo,
             onSearchCity = onSearchCity,
-            onCitySelected = onCitySelected,
+            onSelectedCityInfo = onSelectedCityInfo,
         )
         Spacer(modifier = Modifier.height(50.dp))
         WeatherMainContent(state.currentWeather)
@@ -163,10 +178,7 @@ private fun WeatherMainContent(currentWeather: CurrentWeather?) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = currentWeather?.weatherIcon ?: "",
-            fontSize = 60.sp,
-            modifier = Modifier
-                .size(90.dp)
-                .padding(10.dp),
+            fontSize = 90.sp,
         )
         Text(
             text = "${currentWeather?.temperature}°C",
