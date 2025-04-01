@@ -9,7 +9,6 @@ import com.rndeveloper.myapplication.data.datasource.remote.WeatherClient
 
 class WeatherRemoteDataSource {
 
-    @RequiresApi(Build.VERSION_CODES.O)
     suspend fun getWeather(lat: Double, lon: Double): Weather =
         WeatherClient
             .instance
@@ -26,7 +25,6 @@ class WeatherRemoteDataSource {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 private fun RemoteWeather.toDomainModel(): Weather {
     return Weather(
         current = this.current.toCurrentWeather(),

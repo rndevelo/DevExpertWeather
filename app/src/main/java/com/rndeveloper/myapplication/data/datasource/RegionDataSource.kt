@@ -22,5 +22,4 @@ class RegionDataSource(
         val country = addresses.firstOrNull()?.countryName ?: "Unknown country"
         return City(0,locality, country, latitude, longitude)
     }
-
 }

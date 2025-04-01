@@ -31,7 +31,11 @@ class HomeViewModel(
     private val _state = MutableStateFlow(UiState())
     val state get(): StateFlow<UiState> = _state.asStateFlow()
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
+    init {
+        onAction(HomeAction.OnGetFavCities)
+    }
+
     fun onAction(action: HomeAction) {
         _state.update { it.copy(loading = true) }
         when (action) {
@@ -50,7 +54,6 @@ class HomeViewModel(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun onGetWeather(lat: Double, lon: Double) = viewModelScope.launch {
         _state.update {
             it.copy(

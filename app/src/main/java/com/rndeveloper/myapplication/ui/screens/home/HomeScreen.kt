@@ -157,10 +157,20 @@ fun HomeContent(
             },
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        LazyRow(modifier = Modifier.fillMaxWidth()) {
-            items(state.favCities) {
-                Card(modifier = Modifier.padding(8.dp)) {
-                    Text(text = it.name, style = MaterialTheme.typography.titleMedium)
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(5.dp)
+        ) {
+            items(state.favCities) { city ->
+                Card(
+                    onClick = { onAction(HomeAction.OnSelectedCity(city)) },
+                    colors = CardDefaults.cardColors(containerColor = if (city == state.selectedCity) MaterialTheme.colorScheme.primaryContainer else Color.Unspecified)
+                ) {
+                    Text(
+                        text = city.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(8.dp)
+                    )
                 }
             }
         }

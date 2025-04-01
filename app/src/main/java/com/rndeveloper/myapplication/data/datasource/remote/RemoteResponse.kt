@@ -28,7 +28,6 @@ data class RemoteCurrentWeather(
     @SerialName(value = "precipitation") val precipitation: Double,
 ) {
     // Convertimos los datos en un objeto CurrentWeather para nuestro dominio
-    @RequiresApi(Build.VERSION_CODES.O)
     fun toCurrentWeather(): CurrentWeather {
         return CurrentWeather(
             date = date.formatUiDate(),
