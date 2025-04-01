@@ -15,10 +15,9 @@ import kotlinx.coroutines.launch
 class ForecastViewModel(
     private val cityName: String,
     private val lat: Double,
-    private val lon: Double
+    private val lon: Double,
+    private val repository: WeatherRepository
 ) : ViewModel() {
-
-    private val repository = WeatherRepository()
 
     private val _state = MutableStateFlow(UiState())
     val state: StateFlow<UiState> = _state.asStateFlow()

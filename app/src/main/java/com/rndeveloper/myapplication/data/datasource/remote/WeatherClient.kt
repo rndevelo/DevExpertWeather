@@ -1,4 +1,4 @@
-package com.rndeveloper.myapplication.data
+package com.rndeveloper.myapplication.data.datasource.remote
 
 import com.rndeveloper.myapplication.BuildConfig
 import kotlinx.serialization.json.Json

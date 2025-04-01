@@ -1,10 +1,14 @@
-package com.rndeveloper.myapplication.data
+package com.rndeveloper.myapplication.data.datasource.remote
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.rndeveloper.myapplication.common.formatUiDate
 import com.rndeveloper.myapplication.common.getWeatherDescription
 import com.rndeveloper.myapplication.common.getWeatherIcon
+import com.rndeveloper.myapplication.data.CurrentWeather
+import com.rndeveloper.myapplication.data.DailyForecast
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -64,17 +68,21 @@ data class RemoteDailyForecast(
 
 @Serializable
 data class GeoCodingResponse(
-    val results: List<CityInfo>
+    val results: List<City>
 )
 
+@Entity
 @Serializable
-data class CityInfo(
+data class City(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int,
     val name: String,
     val country: String,
     val latitude: Double,
     val longitude: Double
 ){
     constructor() : this(
+        id = 0,
         name = "",
         country = "",
         latitude = 40.71,

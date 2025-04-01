@@ -1,4 +1,4 @@
-package com.rndeveloper.myapplication.data
+package com.rndeveloper.myapplication.data.datasource.remote
 
 import retrofit2.http.GET
 import retrofit2.http.Query

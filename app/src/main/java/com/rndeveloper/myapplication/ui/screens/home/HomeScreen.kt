@@ -13,11 +13,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -29,14 +32,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -46,36 +47,30 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rndeveloper.myapplication.R
 import com.rndeveloper.myapplication.common.PermissionRequestEffect
-import com.rndeveloper.myapplication.common.getLocalityAndCountry
-import com.rndeveloper.myapplication.common.getLocation
-import com.rndeveloper.myapplication.data.CityInfo
 import com.rndeveloper.myapplication.data.CurrentWeather
 import com.rndeveloper.myapplication.ui.components.LoadingAnimation
 import com.rndeveloper.myapplication.ui.components.TopAppBar
 import com.rndeveloper.myapplication.ui.screens.home.components.SearchContent
 import com.rndeveloper.myapplication.ui.theme.DevExpertWeatherTheme
-import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    vm: HomeViewModel = viewModel(),
+    vm: HomeViewModel,
     onForecastClick: (String, String, String) -> Unit = { _, _, _ -> }
 ) {
 
-    val ctx = LocalContext.current.applicationContext
-    val coroutineScope = rememberCoroutineScope()
     val state by vm.state.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
     var message by rememberSaveable { mutableStateOf("") }
 
-    LaunchedEffect(state.selectedCityInfo) {
-        if (state.selectedCityInfo != null) {
+    LaunchedEffect(state.selectedCity) {
+        if (state.selectedCity != null) {
             vm.onAction(
-                HomeAction.OnUiReady(
-                    lat = state.selectedCityInfo?.latitude!!,
-                    lon = state.selectedCityInfo?.longitude!!
+                HomeAction.OnGetWeather(
+                    lat = state.selectedCity?.latitude!!,
+                    lon = state.selectedCity?.longitude!!
                 )
             )
         }
@@ -89,29 +84,12 @@ fun HomeScreen(
         }
     }
 
-    PermissionRequestEffect(permission = Manifest.permission.ACCESS_COARSE_LOCATION) { granted ->
-        coroutineScope.launch {
-            if (granted) {
-                ctx.getLocation().let { location ->
-                    if (location != null) {
-                        vm.onAction(
-                            HomeAction.OnSelectedCityInfo(
-                                cityInfo = CityInfo().copy(
-                                    name = ctx.getLocalityAndCountry().first,
-                                    country = ctx.getLocalityAndCountry().second,
-                                    latitude = location.latitude,
-                                    longitude = location.longitude
-                                )
-                            )
-                        )
-                        return@launch
-                    } else {
-                        message = "No se pudo obtener la ubicación"
-                    }
-                }
-            } else {
-                message = "No se pudo obtener la ubicación"
-            }
+    PermissionRequestEffect(permission = Manifest.permission.ACCESS_COARSE_LOCATION) {
+        if (it) {
+            vm.onAction(HomeAction.OnGetCityByLocation)
+            message = "Location permission granted"
+        } else {
+            message = "Location permission denied"
         }
     }
 
@@ -120,7 +98,7 @@ fun HomeScreen(
             TopAppBar(
                 title = { // Ubicación y fecha
                     TopAppBar(
-                        title = "${state.selectedCityInfo?.name}, ${state.selectedCityInfo?.country}",
+                        title = "${state.selectedCity?.name}, ${state.selectedCity?.country}",
                         subtitle = state.currentWeather?.date ?: ""
                     )
                 },
@@ -132,9 +110,9 @@ fun HomeScreen(
                 icon = { Text("\uD83D\uDCCA") },
                 onClick = {
                     onForecastClick(
-                        state.selectedCityInfo?.name ?: "",
-                        state.selectedCityInfo?.latitude.toString(),
-                        state.selectedCityInfo?.longitude.toString()
+                        state.selectedCity?.name ?: "",
+                        state.selectedCity?.latitude.toString(),
+                        state.selectedCity?.longitude.toString()
                     )
                 },
             )
@@ -179,9 +157,17 @@ fun HomeContent(
             },
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        LazyRow(modifier = Modifier.fillMaxWidth()) {
+            items(state.favCities) {
+                Card(modifier = Modifier.padding(8.dp)) {
+                    Text(text = it.name, style = MaterialTheme.typography.titleMedium)
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(20.dp))
         SearchContent(
             keyboardController = keyboardController,
-            citiesInfo = state.citiesInfo,
+            searchedCities = state.searchedCities,
             onAction = onAction
         )
         Spacer(modifier = Modifier.height(50.dp))
@@ -255,6 +241,6 @@ fun WeatherDetailRow(label: String, value: String) {
 @Composable
 fun HomeScreenPreview() {
     DevExpertWeatherTheme {
-        HomeScreen()
+        HomeScreen(vm = viewModel())
     }
 }

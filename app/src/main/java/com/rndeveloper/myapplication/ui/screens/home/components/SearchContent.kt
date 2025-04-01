@@ -1,7 +1,9 @@
 package com.rndeveloper.myapplication.ui.screens.home.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -10,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -24,17 +27,17 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.rndeveloper.myapplication.R
-import com.rndeveloper.myapplication.data.CityInfo
+import com.rndeveloper.myapplication.data.datasource.remote.City
 import com.rndeveloper.myapplication.ui.screens.home.HomeAction
 
 @Composable
 fun SearchContent(
     keyboardController: SoftwareKeyboardController?,
-    citiesInfo: List<CityInfo>,
+    searchedCities: List<City>,
     onAction: (HomeAction) -> Unit,
 ) {
     var cityName by remember { mutableStateOf("") }
-    var suggestions by remember { mutableStateOf(emptyList<CityInfo>()) }
+    var suggestions by remember { mutableStateOf(emptyList<City>()) }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         TextField(
@@ -42,7 +45,7 @@ fun SearchContent(
             onValueChange = { newText ->
                 cityName = newText
                 onAction(HomeAction.OnSearchCities(newText))
-                suggestions = citiesInfo
+                suggestions = searchedCities
             },
             label = { Text(stringResource(R.string.home_text_search_city)) },
             modifier = Modifier.fillMaxWidth(),
@@ -59,28 +62,33 @@ fun SearchContent(
 
         LazyColumn {
             items(suggestions) { city ->
-                Text(
-                    text = "📍 ${city.name}, ${city.country}",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = {
-                            onAction(
-                                HomeAction.OnSelectedCityInfo(
-                                    CityInfo().copy(
-                                        name = city.name,
-                                        country = city.country,
-                                        latitude = city.latitude,
-                                        longitude = city.longitude
-                                    )
-                                )
-                            )
-                            suggestions = emptyList()
-                            keyboardController?.hide()
-                            cityName = ""
-                        })
-                        .padding(12.dp)
+                CityItem(
+                    city = city,
+                    onSaveCity = { onAction(HomeAction.OnSaveCity(city)) },
+                    onSelectedCity = {
+                        cityName = ""
+                        suggestions = emptyList()
+                        keyboardController?.hide()
+                        onAction(HomeAction.OnSelectedCity(city))
+                    }
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun CityItem(city: City, onSaveCity: () -> Unit, onSelectedCity: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onSelectedCity)
+            .padding(12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text = "📍 ${city.name}, ${city.country}")
+        IconButton(onClick = onSaveCity) {
+            Text(text = "➕")
         }
     }
 }
