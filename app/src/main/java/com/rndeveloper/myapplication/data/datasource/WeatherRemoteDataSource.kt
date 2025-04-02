@@ -1,10 +1,8 @@
 package com.rndeveloper.myapplication.data.datasource
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import com.rndeveloper.myapplication.data.Weather
 import com.rndeveloper.myapplication.data.datasource.remote.City
 import com.rndeveloper.myapplication.data.datasource.remote.RemoteWeather
-import com.rndeveloper.myapplication.data.Weather
 import com.rndeveloper.myapplication.data.datasource.remote.WeatherClient
 
 class WeatherRemoteDataSource {

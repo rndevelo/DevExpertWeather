@@ -15,14 +15,14 @@ fun TopAppBar(title: String, subtitle: String){
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = title,
-            fontSize = 20.sp,
+            fontSize = 19.sp,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
         Text(
             text = subtitle,
-            fontSize = 14.sp,
+            fontSize = 15.sp,
             color = Color.Gray
         )
     }

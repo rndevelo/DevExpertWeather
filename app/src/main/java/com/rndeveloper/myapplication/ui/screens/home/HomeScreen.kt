@@ -13,14 +13,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -46,10 +43,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rndeveloper.myapplication.R
+import com.rndeveloper.myapplication.Result
 import com.rndeveloper.myapplication.common.PermissionRequestEffect
 import com.rndeveloper.myapplication.data.CurrentWeather
+import com.rndeveloper.myapplication.data.datasource.remote.City
 import com.rndeveloper.myapplication.ui.components.LoadingAnimation
 import com.rndeveloper.myapplication.ui.components.TopAppBar
+import com.rndeveloper.myapplication.ui.screens.home.components.FavCitiesContent
+import com.rndeveloper.myapplication.ui.screens.home.components.FavouriteIconButtonContent
 import com.rndeveloper.myapplication.ui.screens.home.components.SearchContent
 import com.rndeveloper.myapplication.ui.theme.DevExpertWeatherTheme
 
@@ -64,10 +65,11 @@ fun HomeScreen(
     val state by vm.state.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
     var message by rememberSaveable { mutableStateOf("") }
+    val onAction = vm::onAction
 
     LaunchedEffect(state.selectedCity) {
         if (state.selectedCity != null) {
-            vm.onAction(
+            onAction(
                 HomeAction.OnGetWeather(
                     lat = state.selectedCity?.latitude!!,
                     lon = state.selectedCity?.longitude!!
@@ -87,7 +89,6 @@ fun HomeScreen(
     PermissionRequestEffect(permission = Manifest.permission.ACCESS_COARSE_LOCATION) {
         if (it) {
             vm.onAction(HomeAction.OnGetCityByLocation)
-            message = "Location permission granted"
         } else {
             message = "Location permission denied"
         }
@@ -95,6 +96,7 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
+            val isSelectedCityFav = state.favCities.contains(state.selectedCity)
             TopAppBar(
                 title = { // Ubicación y fecha
                     TopAppBar(
@@ -102,7 +104,18 @@ fun HomeScreen(
                         subtitle = state.currentWeather?.date ?: ""
                     )
                 },
+                actions = {
+                    FavouriteIconButtonContent(isFav = isSelectedCityFav) {
+                        onAction(
+                            HomeAction.OnToggleCity(
+                                state.selectedCity!!,
+                                isSelectedCityFav
+                            )
+                        )
+                    }
+                }
             )
+
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
@@ -157,27 +170,11 @@ fun HomeContent(
             },
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(5.dp)
-        ) {
-            items(state.favCities) { city ->
-                Card(
-                    onClick = { onAction(HomeAction.OnSelectedCity(city)) },
-                    colors = CardDefaults.cardColors(containerColor = if (city == state.selectedCity) MaterialTheme.colorScheme.primaryContainer else Color.Unspecified)
-                ) {
-                    Text(
-                        text = city.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(8.dp)
-                    )
-                }
-            }
-        }
+        FavCitiesContent(state = state, onAction = onAction)
         Spacer(modifier = Modifier.height(20.dp))
         SearchContent(
             keyboardController = keyboardController,
-            searchedCities = state.searchedCities,
+            state = state,
             onAction = onAction
         )
         Spacer(modifier = Modifier.height(50.dp))

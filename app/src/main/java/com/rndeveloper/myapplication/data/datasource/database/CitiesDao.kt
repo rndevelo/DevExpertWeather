@@ -1,22 +1,27 @@
 package com.rndeveloper.myapplication.data.datasource.database
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.rndeveloper.myapplication.data.datasource.remote.City
+import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface CitiesInfoDao {
+interface CitiesDao {
     @Query("SELECT * FROM City")
-    suspend fun getAllCities(): List<City>
+    fun getFavCities(): Flow<List<City>>
 
     @Query("SELECT * FROM City WHERE name = :name")
-    suspend fun getCityByName(name: String): City
+    fun getCityByName(name: String): Flow<City>
 
     @Query("SELECT COUNT(*) FROM City")
     suspend fun countCities(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCity(city: City)
+
+    @Delete
+    suspend fun deleteCity(city: City)
 }

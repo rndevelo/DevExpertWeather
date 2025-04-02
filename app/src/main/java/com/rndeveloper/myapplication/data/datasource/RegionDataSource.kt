@@ -20,6 +20,11 @@ class RegionDataSource(
         val addresses = geocoder.getFromLocationCompat(latitude, longitude, 1)
         val locality = addresses.firstOrNull()?.locality ?: "Unknown locality"
         val country = addresses.firstOrNull()?.countryName ?: "Unknown country"
-        return City(0,locality, country, latitude, longitude)
+        return City().copy(
+            name = locality,
+            country = country,
+            latitude = latitude,
+            longitude = longitude
+        )
     }
 }
