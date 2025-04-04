@@ -3,8 +3,16 @@ package com.rndeveloper.myapplication.ui.screens.home
 import android.Manifest
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,11 +21,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -33,6 +44,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -46,7 +58,7 @@ import com.rndeveloper.myapplication.R
 import com.rndeveloper.myapplication.Result
 import com.rndeveloper.myapplication.common.PermissionRequestEffect
 import com.rndeveloper.myapplication.data.CurrentWeather
-import com.rndeveloper.myapplication.data.datasource.remote.City
+import com.rndeveloper.myapplication.ifSuccess
 import com.rndeveloper.myapplication.ui.components.LoadingAnimation
 import com.rndeveloper.myapplication.ui.components.TopAppBar
 import com.rndeveloper.myapplication.ui.screens.home.components.FavCitiesContent
@@ -62,21 +74,10 @@ fun HomeScreen(
     onForecastClick: (String, String, String) -> Unit = { _, _, _ -> }
 ) {
 
-    val state by vm.state.collectAsState()
+    val state by vm.uiState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
     var message by rememberSaveable { mutableStateOf("") }
     val onAction = vm::onAction
-
-    LaunchedEffect(state.selectedCity) {
-        if (state.selectedCity != null) {
-            onAction(
-                HomeAction.OnGetWeather(
-                    lat = state.selectedCity?.latitude!!,
-                    lon = state.selectedCity?.longitude!!
-                )
-            )
-        }
-    }
 
     LaunchedEffect(message) {
         if (message.isNotEmpty()) {
@@ -99,10 +100,17 @@ fun HomeScreen(
             val isSelectedCityFav = state.favCities.contains(state.selectedCity)
             TopAppBar(
                 title = { // Ubicación y fecha
-                    TopAppBar(
-                        title = "${state.selectedCity?.name}, ${state.selectedCity?.country}",
-                        subtitle = state.currentWeather?.date ?: ""
-                    )
+                    when (state.currentWeather) {
+                        is Result.Loading -> LoadingAnimation(modifier = Modifier.fillMaxSize())
+                        is Result.Success -> {
+                            TopAppBar(
+                                title = "${state.selectedCity?.name}, ${state.selectedCity?.country}",
+                                subtitle = (state.currentWeather as Result.Success<CurrentWeather?>).data?.date
+                                    ?: ""
+                            )
+                        }
+                        is Result.Error -> TODO()
+                    }
                 },
                 actions = {
                     FavouriteIconButtonContent(isFav = isSelectedCityFav) {
@@ -133,13 +141,6 @@ fun HomeScreen(
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
     ) { paddingValues ->
 
-        LoadingAnimation(
-            isLoading = state.loading,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        )
-
         HomeContent(
             state = state,
             onAction = vm::onAction,
@@ -149,6 +150,26 @@ fun HomeScreen(
                 .padding(16.dp),
         )
     }
+}
+
+@Composable
+fun BlinkingText() {
+    val alpha by rememberInfiniteTransition().animateFloat(
+        initialValue = 0.1f,
+        targetValue = 0.8f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 500, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(25.dp)
+            .alpha(alpha)
+            .background(Color.Gray, RoundedCornerShape(4.dp))
+    )
 }
 
 @Composable
@@ -171,16 +192,22 @@ fun HomeContent(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         FavCitiesContent(state = state, onAction = onAction)
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(15.dp))
         SearchContent(
             keyboardController = keyboardController,
             state = state,
             onAction = onAction
         )
-        Spacer(modifier = Modifier.height(50.dp))
-        WeatherMainContent(state.currentWeather)
-        Spacer(modifier = Modifier.height(50.dp))
-        WeatherDetailsContent(currentWeather = state.currentWeather)
+        when (state.currentWeather) {
+            is Result.Loading -> LoadingAnimation(modifier = Modifier.fillMaxSize())
+            is Result.Error -> Text(text = "Error: ${state.currentWeather.exception.message}")
+            is Result.Success -> {
+                Spacer(modifier = Modifier.height(40.dp))
+                WeatherMainContent(currentWeather = state.currentWeather.data)
+                Spacer(modifier = Modifier.height(20.dp))
+                WeatherDetailsContent(currentWeather = state.currentWeather.data)
+            }
+        }
     }
 }
 
@@ -211,7 +238,7 @@ private fun WeatherDetailsContent(currentWeather: CurrentWeather?) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.LightGray.copy(alpha = 0.2f))
+//        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             WeatherDetailRow(

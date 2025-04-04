@@ -2,22 +2,28 @@ package com.rndeveloper.myapplication.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rndeveloper.myapplication.Result
 import com.rndeveloper.myapplication.data.CurrentWeather
 import com.rndeveloper.myapplication.data.RegionRepository
 import com.rndeveloper.myapplication.data.WeatherRepository
 import com.rndeveloper.myapplication.data.datasource.remote.City
+import com.rndeveloper.myapplication.stateAsResultIn
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 sealed interface HomeAction {
-    data class OnGetWeather(val lat: Double, val lon: Double) : HomeAction
     data class OnSearchCities(val query: String) : HomeAction
     data object OnGetCityByLocation : HomeAction
     data class OnSelectedCity(val city: City) : HomeAction
-    data object OnGetFavCities : HomeAction
     data class OnToggleCity(val city: City, val isFav: Boolean) : HomeAction
 }
 
@@ -26,110 +32,79 @@ class HomeViewModel(
     private val regionRepository: RegionRepository,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(UiState())
-    val state get(): StateFlow<UiState> = _state.asStateFlow()
+    // 🔁 Esto es controlable manualmente o por lógica de inicio
+    private val _selectedCity = MutableStateFlow<City?>(null)
+    val selectedCity: StateFlow<City?> = _selectedCity.asStateFlow()
 
-//    val favCitiesState: StateFlow<Result<List<City>>> =
-//        weatherRepository.favCities
-//            .stateAsResultIn(viewModelScope)
+    // 🔍 Ciudades buscadas (ahora accesible desde la UI)
+    private val _searchedCities = MutableStateFlow<List<City>>(emptyList())
+    val searchedCities: StateFlow<List<City>> = _searchedCities.asStateFlow()
+
+    // ⭐ Ciudades favoritas
+    val favCitiesState: StateFlow<List<City>> =
+        weatherRepository.favCities.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            emptyList()
+        )
+
+    // 🌦 Estado del clima según la ciudad seleccionada
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val currentWeatherState: StateFlow<Result<CurrentWeather?>> = selectedCity
+        .filterNotNull()
+        .flatMapLatest { city ->
+            flow {
+                val weather = weatherRepository.getWeather(city.latitude, city.longitude).current
+                emit(weather)
+            }
+        }
+        .stateAsResultIn(viewModelScope)
+
+    // 📌 Combina todo en un solo estado reactivo de la UI
+    val uiState: StateFlow<UiState> = combine(
+        currentWeatherState,
+        searchedCities,
+        favCitiesState,
+        selectedCity
+    ) { currentWeather, searchedCities, favCitiesResult, selectedCity ->
+        UiState(
+            currentWeather = currentWeather,
+            searchedCities = searchedCities,
+            favCities = favCitiesResult,
+            selectedCity = selectedCity
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState())
 
 
     data class UiState(
-        val loading: Boolean = false,
-        val currentWeather: CurrentWeather? = null,
+        val currentWeather: Result<CurrentWeather?> = Result.Loading,
         val searchedCities: List<City> = emptyList(),
         val favCities: List<City> = emptyList(),
         val selectedCity: City? = null,
     )
 
-    init {
-        onAction(HomeAction.OnGetFavCities)
-    }
-
-//    private val currentWeatherFlow = MutableStateFlow<CurrentWeather?>(null)
-//    private val searchedCitiesFlow = MutableStateFlow<List<City>>(emptyList())
-//    private val selectedCityFlow = MutableStateFlow<City?>(null)
-//
-//    // 🔥 **Combinar todos los estados en un único `UiState`**
-//    val state: StateFlow<Result<UiState>> = combine(
-//        weatherRepository.favCities,
-//        weatherRepository.getWeather(),
-//        weatherRepository.searchCities(""),
-//        selectedCityFlow
-//    ) { favCities, currentWeather, searchedCities, selectedCity ->
-//        UiState(
-//            favCities = favCities,
-//            currentWeather = currentWeather,
-//            searchedCities = searchedCities,
-//            selectedCity = selectedCity
-//        )
-//    }.stateAsResultIn(viewModelScope)
-
     fun onAction(action: HomeAction) {
-        _state.update { it.copy(loading = true) }
         when (action) {
-            is HomeAction.OnGetWeather -> onGetWeather(action.lat, action.lon)
-            is HomeAction.OnSearchCities -> onSearchCities(action.query)
             is HomeAction.OnGetCityByLocation -> onGetCityByLocation()
-            is HomeAction.OnSelectedCity -> _state.update {
-                it.copy(
-                    loading = false,
-                    selectedCity = action.city
-                )
-            }
-
-            is HomeAction.OnGetFavCities -> onGetFavCities()
+            is HomeAction.OnSearchCities -> onSearchCities(action.query)
+            is HomeAction.OnSelectedCity -> _selectedCity.value = action.city
             is HomeAction.OnToggleCity -> onToggleFavCity(action.city, action.isFav)
-        }
-    }
-
-    private fun onGetWeather(lat: Double, lon: Double) = viewModelScope.launch {
-        _state.update {
-            it.copy(
-                loading = false,
-                currentWeather = weatherRepository
-                    .getWeather(lat = lat, lon = lon)
-                    .current
-            )
-        }
-    }
-
-    private fun onSearchCities(query: String) = viewModelScope.launch {
-        _state.update {
-            it.copy(
-                loading = false,
-                searchedCities = weatherRepository.searchCities(query = query)
-            )
         }
     }
 
     private fun onGetCityByLocation() = viewModelScope.launch {
         regionRepository.findLastLocationCityInfo().let { city ->
-            _state.update {
-                it.copy(
-                    loading = false,
-                    selectedCity = weatherRepository.searchCities(query = "${city.name}, ${city.country}")
-                        .firstOrNull()
-                )
-            }
+            _selectedCity.value =
+                weatherRepository.searchCities(query = "${city.name}, ${city.country}")
+                    .firstOrNull()
         }
+    }
+
+    private fun onSearchCities(query: String) = viewModelScope.launch {
+        _searchedCities.value = weatherRepository.searchCities(query)
     }
 
     private fun onToggleFavCity(city: City, isFav: Boolean) = viewModelScope.launch {
         weatherRepository.toggleFavCity(city, isFav)
-        _state.update {
-            it.copy(loading = false)
-        }
-    }
-
-    private fun onGetFavCities() = viewModelScope.launch {
-        weatherRepository.favCities.collect { favCities ->
-            _state.update {
-                it.copy(
-                    loading = false,
-                    favCities = favCities
-                )
-            }
-        }
     }
 }

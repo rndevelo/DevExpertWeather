@@ -80,7 +80,6 @@ fun ForecastScreen(
     ) { paddingValues ->
 
         LoadingAnimation(
-            isLoading = state.loading,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
