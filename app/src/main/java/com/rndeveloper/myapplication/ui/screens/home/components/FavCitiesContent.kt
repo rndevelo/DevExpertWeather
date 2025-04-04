@@ -32,7 +32,7 @@ fun FavCitiesContent(
 ) {
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(5.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(state.favCities) { city ->
             Card(
