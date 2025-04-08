@@ -1,6 +1,11 @@
 package com.rndeveloper.myapplication.data
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
 data class Weather(
+    @PrimaryKey(autoGenerate = true)
     val current: CurrentWeather,
     val forecast: List<DailyForecast>
 )

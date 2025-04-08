@@ -3,8 +3,8 @@ package com.rndeveloper.myapplication.ui.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rndeveloper.myapplication.Result
-import com.rndeveloper.myapplication.data.CurrentWeather
 import com.rndeveloper.myapplication.data.RegionRepository
+import com.rndeveloper.myapplication.data.Weather
 import com.rndeveloper.myapplication.data.WeatherRepository
 import com.rndeveloper.myapplication.data.datasource.remote.City
 import com.rndeveloper.myapplication.stateAsResultIn
@@ -40,21 +40,16 @@ class HomeViewModel(
     private val _searchedCities = MutableStateFlow<List<City>>(emptyList())
     val searchedCities: StateFlow<List<City>> = _searchedCities.asStateFlow()
 
-    // ⭐ Ciudades favoritas
-    val favCitiesState: StateFlow<List<City>> =
-        weatherRepository.favCities.stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            emptyList()
-        )
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val favCitiesState: StateFlow<Result<List<City>>> = weatherRepository.favCities.stateAsResultIn(viewModelScope)
 
     // 🌦 Estado del clima según la ciudad seleccionada
     @OptIn(ExperimentalCoroutinesApi::class)
-    val currentWeatherState: StateFlow<Result<CurrentWeather?>> = selectedCity
+    val weatherState: StateFlow<Result<Weather?>> = selectedCity
         .filterNotNull()
         .flatMapLatest { city ->
             flow {
-                val weather = weatherRepository.getWeather(city.latitude, city.longitude).current
+                val weather = weatherRepository.getWeather(city.latitude, city.longitude)
                 emit(weather)
             }
         }
@@ -62,13 +57,13 @@ class HomeViewModel(
 
     // 📌 Combina todo en un solo estado reactivo de la UI
     val uiState: StateFlow<UiState> = combine(
-        currentWeatherState,
+        weatherState,
         searchedCities,
         favCitiesState,
         selectedCity
-    ) { currentWeather, searchedCities, favCitiesResult, selectedCity ->
+    ) { weather, searchedCities, favCitiesResult, selectedCity ->
         UiState(
-            currentWeather = currentWeather,
+            weather = weather,
             searchedCities = searchedCities,
             favCities = favCitiesResult,
             selectedCity = selectedCity
@@ -77,9 +72,9 @@ class HomeViewModel(
 
 
     data class UiState(
-        val currentWeather: Result<CurrentWeather?> = Result.Loading,
+        val weather: Result<Weather?> = Result.Loading,
+        val favCities: Result<List<City>> = Result.Loading,
         val searchedCities: List<City> = emptyList(),
-        val favCities: List<City> = emptyList(),
         val selectedCity: City? = null,
     )
 

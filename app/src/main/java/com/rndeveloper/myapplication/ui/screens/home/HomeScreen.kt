@@ -16,19 +16,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -56,11 +53,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rndeveloper.myapplication.R
 import com.rndeveloper.myapplication.Result
+import com.rndeveloper.myapplication.ShowResult
 import com.rndeveloper.myapplication.common.PermissionRequestEffect
 import com.rndeveloper.myapplication.data.CurrentWeather
+import com.rndeveloper.myapplication.data.Weather
+import com.rndeveloper.myapplication.data.datasource.remote.City
 import com.rndeveloper.myapplication.ifSuccess
-import com.rndeveloper.myapplication.ui.components.LoadingAnimation
-import com.rndeveloper.myapplication.ui.components.TopAppBar
+import com.rndeveloper.myapplication.ui.screens.components.MyTopAppBar
 import com.rndeveloper.myapplication.ui.screens.home.components.FavCitiesContent
 import com.rndeveloper.myapplication.ui.screens.home.components.FavouriteIconButtonContent
 import com.rndeveloper.myapplication.ui.screens.home.components.SearchContent
@@ -97,29 +96,27 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            val isSelectedCityFav = state.favCities.contains(state.selectedCity)
             TopAppBar(
                 title = { // Ubicación y fecha
-                    when (state.currentWeather) {
-                        is Result.Loading -> LoadingAnimation(modifier = Modifier.fillMaxSize())
-                        is Result.Success -> {
-                            TopAppBar(
-                                title = "${state.selectedCity?.name}, ${state.selectedCity?.country}",
-                                subtitle = (state.currentWeather as Result.Success<CurrentWeather?>).data?.date
-                                    ?: ""
-                            )
-                        }
-                        is Result.Error -> TODO()
+                    state.weather.ShowResult {
+                        MyTopAppBar(
+                            title = "${state.selectedCity?.name}, ${state.selectedCity?.country}",
+                            subtitle = (state.weather as Result.Success<Weather?>).data?.current?.date
+                                ?: ""
+                        )
                     }
                 },
                 actions = {
-                    FavouriteIconButtonContent(isFav = isSelectedCityFav) {
-                        onAction(
-                            HomeAction.OnToggleCity(
-                                state.selectedCity!!,
-                                isSelectedCityFav
+                    state.favCities.ifSuccess { favCitiesData ->
+                        val isSelectedCityFav = favCitiesData.contains(state.selectedCity)
+                        FavouriteIconButtonContent(isFav = isSelectedCityFav) {
+                            onAction(
+                                HomeAction.OnToggleCity(
+                                    state.selectedCity!!,
+                                    isSelectedCityFav
+                                )
                             )
-                        )
+                        }
                     }
                 }
             )
@@ -127,7 +124,7 @@ fun HomeScreen(
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                text = { Text(stringResource(R.string.home_text_forecast)) },
+                text = { Text(stringResource(R.string.forecast_text_7_day_forecast)) },
                 icon = { Text("\uD83D\uDCCA") },
                 onClick = {
                     onForecastClick(
@@ -139,6 +136,7 @@ fun HomeScreen(
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
+        contentWindowInsets = WindowInsets.safeDrawing
     ) { paddingValues ->
 
         HomeContent(
@@ -183,7 +181,6 @@ fun HomeContent(
 
     Column(
         modifier = modifier
-            .imePadding()
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = { keyboardController?.hide() }
@@ -191,21 +188,26 @@ fun HomeContent(
             },
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        FavCitiesContent(state = state, onAction = onAction)
-        Spacer(modifier = Modifier.height(15.dp))
+        state.favCities.ShowResult {
+            FavCitiesContent(
+                favCities = (state.favCities as Result.Success<List<City>>).data,
+                selectedCity = state.selectedCity,
+                onAction = onAction
+            )
+            Spacer(modifier = Modifier.height(15.dp))
+        }
+
         SearchContent(
             keyboardController = keyboardController,
             state = state,
             onAction = onAction
         )
-        when (state.currentWeather) {
-            is Result.Loading -> LoadingAnimation(modifier = Modifier.fillMaxSize())
-            is Result.Error -> Text(text = "Error: ${state.currentWeather.exception.message}")
-            is Result.Success -> {
+        state.weather.ShowResult {
+            (state.weather as Result.Success<Weather?>).data?.current.let { current ->
                 Spacer(modifier = Modifier.height(40.dp))
-                WeatherMainContent(currentWeather = state.currentWeather.data)
-                Spacer(modifier = Modifier.height(20.dp))
-                WeatherDetailsContent(currentWeather = state.currentWeather.data)
+                WeatherMainContent(currentWeather = current)
+                Spacer(modifier = Modifier.height(25.dp))
+                WeatherDetailsContent(currentWeather = current)
             }
         }
     }
@@ -226,7 +228,7 @@ private fun WeatherMainContent(currentWeather: CurrentWeather?) {
         )
         Text(
             text = currentWeather?.weatherDescription ?: "",
-            fontSize = 18.sp,
+            fontSize = 25.sp,
             color = Color.Gray
         )
     }

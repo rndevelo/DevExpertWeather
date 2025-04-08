@@ -1,6 +1,8 @@
 package com.rndeveloper.myapplication.ui.navigation
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -20,6 +22,7 @@ import com.rndeveloper.myapplication.ui.screens.forecast.ForecastViewModel
 import com.rndeveloper.myapplication.ui.screens.home.HomeScreen
 import com.rndeveloper.myapplication.ui.screens.home.HomeViewModel
 
+@SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
 fun Navigation() {
 
