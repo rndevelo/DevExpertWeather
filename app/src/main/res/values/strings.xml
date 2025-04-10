@@ -5,6 +5,7 @@
     <string name="home_text_temperature">🌡️ Temperature</string>
     <string name="home_text_humidity">💧 Humidity</string>
     <string name="home_text_wind_speed">💨 Wind speed</string>
+    <string name="home_text_precipitation">☔ Precipitation</string>
 
     <string name="forecast_text_7_day_forecast">7-day forecast</string>
     <string name="forecast_text_max_c">🌡️ Max: %1$s°C</string>

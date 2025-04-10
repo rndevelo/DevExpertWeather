@@ -34,10 +34,7 @@ class ForecastViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val weatherState: StateFlow<Result<Weather?>> =
-        flow {
-            val weather = weatherRepository.getWeather(lat, lon)
-            emit(weather)
-        }.stateAsResultIn(viewModelScope)
+        weatherRepository.weather(lat, lon).stateAsResultIn(viewModelScope)
 
 
     // Combine del nombre + weather

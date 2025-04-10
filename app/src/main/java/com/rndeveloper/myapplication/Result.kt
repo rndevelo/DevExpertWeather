@@ -1,16 +1,10 @@
 package com.rndeveloper.myapplication
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.rndeveloper.myapplication.Result
 import com.rndeveloper.myapplication.ui.screens.components.LoadingAnimation
-import com.rndeveloper.myapplication.ui.screens.home.components.FavCitiesContent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted

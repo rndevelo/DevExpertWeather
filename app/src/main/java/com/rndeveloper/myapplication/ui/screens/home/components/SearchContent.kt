@@ -28,14 +28,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.rndeveloper.myapplication.R
 import com.rndeveloper.myapplication.data.datasource.remote.City
-import com.rndeveloper.myapplication.ifSuccess
 import com.rndeveloper.myapplication.ui.screens.home.HomeAction
-import com.rndeveloper.myapplication.ui.screens.home.HomeViewModel
 
 @Composable
 fun SearchContent(
     keyboardController: SoftwareKeyboardController?,
-    state: HomeViewModel.UiState,
+    favCities: List<City>,
+    searchedCities: List<City>,
     onAction: (HomeAction) -> Unit,
 ) {
     var cityName by remember { mutableStateOf("") }
@@ -61,27 +60,25 @@ fun SearchContent(
             ),
         )
 
-        state.favCities.ifSuccess { favCitiesData ->
-            LazyColumn {
-                items(state.searchedCities) { city ->
-                    CityItem(
-                        city = city,
-                        favCities = favCitiesData,
-                        onSaveCity = {
-                            onAction(
-                                HomeAction.OnToggleCity(
-                                    city,
-                                    favCitiesData.contains(city)
-                                )
+        LazyColumn {
+            items(searchedCities) { city ->
+                CityItem(
+                    city = city,
+                    favCities = favCities,
+                    onSaveCity = {
+                        onAction(
+                            HomeAction.OnToggleCity(
+                                city,
+                                favCities.contains(city)
                             )
-                        },
-                        onSelectedCity = {
-                            cityName = ""
-                            keyboardController?.hide()
-                            onAction(HomeAction.OnSelectedCity(city))
-                        }
-                    )
-                }
+                        )
+                    },
+                    onSelectedCity = {
+                        cityName = ""
+                        keyboardController?.hide()
+                        onAction(HomeAction.OnSelectedCity(city))
+                    }
+                )
             }
         }
     }

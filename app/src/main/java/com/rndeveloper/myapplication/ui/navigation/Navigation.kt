@@ -2,7 +2,6 @@ package com.rndeveloper.myapplication.ui.navigation
 
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -13,7 +12,7 @@ import androidx.navigation.navArgument
 import com.rndeveloper.myapplication.App
 import com.rndeveloper.myapplication.data.RegionRepository
 import com.rndeveloper.myapplication.data.WeatherRepository
-import com.rndeveloper.myapplication.data.datasource.CitiesInfoLocalDataSource
+import com.rndeveloper.myapplication.data.datasource.WeatherLocalDataSource
 import com.rndeveloper.myapplication.data.datasource.LocationDataSource
 import com.rndeveloper.myapplication.data.datasource.RegionDataSource
 import com.rndeveloper.myapplication.data.datasource.WeatherRemoteDataSource
@@ -31,7 +30,7 @@ fun Navigation() {
     val app = LocalContext.current.applicationContext as App
 
     val weatherRepository =
-        WeatherRepository(WeatherRemoteDataSource(), CitiesInfoLocalDataSource(app.db.citiesDao()))
+        WeatherRepository(WeatherRemoteDataSource(), WeatherLocalDataSource(app.db.weatherDao()))
     val regionRepository = RegionRepository(RegionDataSource(app, LocationDataSource(app)))
 
     NavHost(

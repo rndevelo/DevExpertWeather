@@ -74,6 +74,7 @@ dependencies {
     implementation (libs.okhttp)
     implementation(libs.retrofit.converter.kotlinx.serialization)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.gson)
 
 //    Coil
     implementation(libs.coil.compose)
