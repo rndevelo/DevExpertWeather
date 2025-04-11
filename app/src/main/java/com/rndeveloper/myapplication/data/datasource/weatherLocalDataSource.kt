@@ -13,10 +13,6 @@ class WeatherLocalDataSource(private val weatherDao: WeatherDao) {
 
     suspend fun insertWeather(weather: Weather) = weatherDao.insertWeather(weather)
 
-    fun getCityByName(name: String) = weatherDao.getCityByName(name)
-
-    suspend fun isEmpty() = weatherDao.countCities() <= 0
-
     suspend fun insertFavCity(city: City) = weatherDao.insertFavCity(city)
 
     suspend fun deleteFavCity(city: City) = weatherDao.deleteFavCity(city)

@@ -24,11 +24,11 @@ class WeatherRemoteDataSource {
 }
 
 private fun RemoteWeather.toDomainModel(lat: Double, lon: Double): Weather {
+    val currentTime = System.currentTimeMillis()
     return Weather(
-        id = 0,
         current = this.current.toCurrentWeather(),
         forecast = this.daily.toDailyForecastList(),
-        lastUpdated = System.currentTimeMillis(),
+        lastUpdated = currentTime,
         lat = lat,
         lon = lon
     )

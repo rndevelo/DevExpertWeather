@@ -1,7 +1,5 @@
 package com.rndeveloper.myapplication.data.datasource.remote
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.rndeveloper.myapplication.common.formatUiDate
@@ -50,7 +48,6 @@ data class RemoteDailyForecast(
     @SerialName(value = "weathercode") val weatherCodes: List<Int>
 ) {
     // Convertimos los datos en una lista de objetos DailyForecast para nuestro dominio
-    @RequiresApi(Build.VERSION_CODES.O)
     fun toDailyForecastList(): List<DailyForecast> {
         return dates.mapIndexed { index, date ->
             DailyForecast(

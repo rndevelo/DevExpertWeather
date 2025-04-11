@@ -20,12 +20,6 @@ interface WeatherDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWeather(weather: Weather)
 
-    @Query("SELECT * FROM City WHERE name = :name")
-    fun getCityByName(name: String): Flow<City>
-
-    @Query("SELECT COUNT(*) FROM City")
-    suspend fun countCities(): Int
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFavCity(city: City)
 

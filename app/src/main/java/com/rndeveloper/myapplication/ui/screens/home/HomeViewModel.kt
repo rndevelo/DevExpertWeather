@@ -45,7 +45,7 @@ class HomeViewModel(
 
     // 🌦 Estado del clima según la ciudad seleccionada
     @OptIn(ExperimentalCoroutinesApi::class)
-    val weatherState: StateFlow<Result<Weather?>> = selectedCityState
+    val weatherState: StateFlow<Result<Weather>> = selectedCityState
         .filterNotNull()
         .flatMapLatest { city ->
             weatherRepository.weather(city.latitude, city.longitude)
@@ -64,10 +64,7 @@ class HomeViewModel(
 
         UiState(
             isLoading = isLoading,
-            weather = when (weatherResult) {
-                is Result.Success -> weatherResult.data
-                else -> null
-            },
+            weatherResult = weatherResult,
             searchedCities = searchedCities,
             favCities = when (favCitiesResult) {
                 is Result.Success -> favCitiesResult.data
@@ -76,16 +73,15 @@ class HomeViewModel(
             selectedCity = selectedCity,
 
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState(isLoading = true))
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState())
 
 
     data class UiState(
         val isLoading: Boolean = false,
-        val weather: Weather? = null,
+        val weatherResult:  Result<Weather> = Result.Loading,
         val favCities: List<City> = emptyList(),
         val searchedCities: List<City> = emptyList(),
         val selectedCity: City? = null,
-        val isSelectedCityFav: Boolean = false, // 🆕 Añadido
     )
 
     fun onAction(action: HomeAction) {

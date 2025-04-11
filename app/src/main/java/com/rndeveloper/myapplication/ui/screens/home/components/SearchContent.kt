@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -32,10 +33,10 @@ import com.rndeveloper.myapplication.ui.screens.home.HomeAction
 
 @Composable
 fun SearchContent(
-    keyboardController: SoftwareKeyboardController?,
     favCities: List<City>,
     searchedCities: List<City>,
     onAction: (HomeAction) -> Unit,
+    keyboardController: SoftwareKeyboardController? = null,
 ) {
     var cityName by remember { mutableStateOf("") }
 
@@ -44,7 +45,7 @@ fun SearchContent(
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        TextField(
+        OutlinedTextField(
             value = cityName,
             onValueChange = { newCityName ->
                 cityName = newCityName

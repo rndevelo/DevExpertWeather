@@ -51,16 +51,35 @@ fun ForecastScreen(
     vm: ForecastViewModel,
     onBack: () -> Unit
 ) {
+    val state by vm.uiState.collectAsState()
+
+    state.weather.ShowResult {
+        (state.weather as Result.Success<Weather?>).data?.forecast?.let { forecast ->
+            ForecastContent(
+                cityName = state.cityName,
+                forecast = forecast,
+                onBack = onBack,
+            )
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun ForecastContent(
+    cityName: String,
+    forecast: List<DailyForecast>,
+    onBack: () -> Unit,
+) {
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val state by vm.uiState.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     MyTopAppBar(
-                        title = state.cityName,
+                        title = cityName,
                         subtitle = stringResource(R.string.forecast_text_7_day_forecast)
                     )
                 },
@@ -79,18 +98,14 @@ fun ForecastScreen(
         contentWindowInsets = WindowInsets.safeDrawing
     ) { paddingValues ->
 
-        state.weather.ShowResult {
-            (state.weather as Result.Success<Weather?>).data?.forecast?.let { forecast ->
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(forecast) { forecast ->
-                        WeatherForecastItem(forecast)
-                    }
-                }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(forecast) { forecast ->
+                WeatherForecastItem(forecast)
             }
         }
     }
@@ -129,11 +144,17 @@ fun WeatherForecastItem(forecast: DailyForecast) {
                 )
                 Column {
                     Text(
-                        text = stringResource(R.string.forecast_text_max_c, forecast.maxTemperature),
+                        text = stringResource(
+                            R.string.forecast_text_max_c,
+                            forecast.maxTemperature
+                        ),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
-                        text = stringResource(R.string.forecast_text_min_c, forecast.minTemperature),
+                        text = stringResource(
+                            R.string.forecast_text_min_c,
+                            forecast.minTemperature
+                        ),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.rndeveloper.myapplication.ui.screens.components.ErrorText
 import com.rndeveloper.myapplication.ui.screens.components.LoadingAnimation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -36,7 +37,7 @@ fun <T> Flow<T>.stateAsResultIn(scope: CoroutineScope): StateFlow<Result<T>> =
 fun <T> Result<T>.ShowResult(content: @Composable () -> Unit){
     when (this) {
         is Result.Loading -> LoadingAnimation(modifier = Modifier.fillMaxSize())
-        is Result.Error -> Text(text = "Error: ${exception.message}")
+        is Result.Error -> ErrorText(error = exception)
         is Result.Success -> content()
     }
 }

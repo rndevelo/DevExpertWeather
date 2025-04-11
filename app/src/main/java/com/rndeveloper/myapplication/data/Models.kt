@@ -1,22 +1,18 @@
 package com.rndeveloper.myapplication.data
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-@Entity
+@Entity(primaryKeys = ["lat", "lon"])
 data class Weather(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int,
     val current: Current,
     val forecast: List<DailyForecast>,
     val lastUpdated: Long, // tiempo en milisegundos
     val lat: Double,
     val lon: Double
 )
-
 
 data class Current(
     val date: String,
