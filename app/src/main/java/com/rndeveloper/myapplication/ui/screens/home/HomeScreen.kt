@@ -193,7 +193,6 @@ fun HomeContent(
                 selectedCity = selectedCity,
                 onAction = onAction
             )
-            Spacer(modifier = Modifier.height(15.dp))
             SearchContent(
                 keyboardController = keyboardController,
                 favCities = favCities,
