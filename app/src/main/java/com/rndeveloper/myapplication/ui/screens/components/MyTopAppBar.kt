@@ -1,4 +1,4 @@
-package com.rndeveloper.myapplication.ui.components
+package com.rndeveloper.myapplication.ui.screens.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +11,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun TopAppBar(title: String, subtitle: String){
+fun MyTopAppBar(title: String, subtitle: String){
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = title,

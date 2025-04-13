@@ -1,5 +1,6 @@
 package com.rndeveloper.myapplication.ui.navigation
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -11,7 +12,7 @@ import androidx.navigation.navArgument
 import com.rndeveloper.myapplication.App
 import com.rndeveloper.myapplication.data.RegionRepository
 import com.rndeveloper.myapplication.data.WeatherRepository
-import com.rndeveloper.myapplication.data.datasource.CitiesInfoLocalDataSource
+import com.rndeveloper.myapplication.data.datasource.WeatherLocalDataSource
 import com.rndeveloper.myapplication.data.datasource.LocationDataSource
 import com.rndeveloper.myapplication.data.datasource.RegionDataSource
 import com.rndeveloper.myapplication.data.datasource.WeatherRemoteDataSource
@@ -20,6 +21,7 @@ import com.rndeveloper.myapplication.ui.screens.forecast.ForecastViewModel
 import com.rndeveloper.myapplication.ui.screens.home.HomeScreen
 import com.rndeveloper.myapplication.ui.screens.home.HomeViewModel
 
+@SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
 fun Navigation() {
 
@@ -28,7 +30,7 @@ fun Navigation() {
     val app = LocalContext.current.applicationContext as App
 
     val weatherRepository =
-        WeatherRepository(WeatherRemoteDataSource(), CitiesInfoLocalDataSource(app.db.citiesDao()))
+        WeatherRepository(WeatherRemoteDataSource(), WeatherLocalDataSource(app.db.weatherDao()))
     val regionRepository = RegionRepository(RegionDataSource(app, LocationDataSource(app)))
 
     NavHost(

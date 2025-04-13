@@ -1,13 +1,11 @@
 package com.rndeveloper.myapplication.data.datasource.remote
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.rndeveloper.myapplication.common.formatUiDate
 import com.rndeveloper.myapplication.common.getWeatherDescription
 import com.rndeveloper.myapplication.common.getWeatherIcon
-import com.rndeveloper.myapplication.data.CurrentWeather
+import com.rndeveloper.myapplication.data.Current
 import com.rndeveloper.myapplication.data.DailyForecast
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -28,8 +26,8 @@ data class RemoteCurrentWeather(
     @SerialName(value = "precipitation") val precipitation: Double,
 ) {
     // Convertimos los datos en un objeto CurrentWeather para nuestro dominio
-    fun toCurrentWeather(): CurrentWeather {
-        return CurrentWeather(
+    fun toCurrentWeather(): Current {
+        return Current(
             date = date.formatUiDate(),
             weatherDescription = weatherCode.getWeatherDescription(),
             weatherIcon = weatherCode.getWeatherIcon(),
@@ -50,7 +48,6 @@ data class RemoteDailyForecast(
     @SerialName(value = "weathercode") val weatherCodes: List<Int>
 ) {
     // Convertimos los datos en una lista de objetos DailyForecast para nuestro dominio
-    @RequiresApi(Build.VERSION_CODES.O)
     fun toDailyForecastList(): List<DailyForecast> {
         return dates.mapIndexed { index, date ->
             DailyForecast(
@@ -66,9 +63,7 @@ data class RemoteDailyForecast(
 }
 
 @Serializable
-data class GeoCodingResponse(
-    val results: List<City>
-)
+data class GeoCodingResponse(val results: List<City>)
 
 @Entity
 @Serializable

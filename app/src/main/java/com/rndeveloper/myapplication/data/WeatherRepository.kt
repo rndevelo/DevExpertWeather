@@ -1,42 +1,47 @@
 package com.rndeveloper.myapplication.data
 
-import com.rndeveloper.myapplication.data.datasource.CitiesInfoLocalDataSource
+import com.rndeveloper.myapplication.data.datasource.WeatherLocalDataSource
 import com.rndeveloper.myapplication.data.datasource.WeatherRemoteDataSource
 import com.rndeveloper.myapplication.data.datasource.remote.City
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.transform
 
 class WeatherRepository(
     private val weatherRemoteDataSource: WeatherRemoteDataSource,
-    private val localDataSource: CitiesInfoLocalDataSource
+    private val weatherLocalDataSource: WeatherLocalDataSource,
 ) {
 
-    suspend fun getWeather(lat: Double, lon: Double) = weatherRemoteDataSource.getWeather(lat, lon)
+    fun weather(lat: Double, lon: Double): Flow<Weather> = flow {
+        val localWeather = weatherLocalDataSource.weather(lat, lon).firstOrNull()
+        if (localWeather == null || shouldFetchRemote(localWeather.lastUpdated)) {
+            val remoteWeather = weatherRemoteDataSource.getWeather(lat, lon)
+            weatherLocalDataSource.insertWeather(remoteWeather)
+        }
+        emitAll(weatherLocalDataSource.weather(lat, lon))
+    }
 
-    suspend fun searchCities(query: String) = weatherRemoteDataSource.searchCities(query)
+    private fun shouldFetchRemote(lastUpdated: Long): Boolean {
+        val currentTime = System.currentTimeMillis()
+        val tenMinutesInMillis = 10 * 60 * 1000 // 10 minutos en milisegundos
+        return (currentTime - lastUpdated) > tenMinutesInMillis
+    }
 
-    val favCities: Flow<List<City>> = localDataSource.favCities.transform {
+    val favCities: Flow<List<City>> = weatherLocalDataSource.favCities.transform {
         val cities = it.takeIf { it.isNotEmpty() } ?: emptyList()
         emit(cities)
     }
 
+    suspend fun searchCities(query: String) = weatherRemoteDataSource.searchCities(query)
+
     suspend fun toggleFavCity(city: City, isFav: Boolean) {
         if (isFav) {
-            localDataSource.deleteCity(city)
+            weatherLocalDataSource.deleteFavCity(city)
         } else {
-            localDataSource.insertCity(city)
+            weatherLocalDataSource.insertFavCity(city)
         }
     }
-
-
-    //    Función interesante para probar algo semejante en el futuro con una base de datos remota
-
-//    val favCities: Flow<List<City>> = localDataSource.favCities.transform {
-//        val cities = it.takeIf { it.isNotEmpty() }
-//            ?: weatherRemoteDataSource.searchCities("query").also {
-//                insertCity(it.first())
-//            }
-//        emit(cities)
-//    }
 }
 

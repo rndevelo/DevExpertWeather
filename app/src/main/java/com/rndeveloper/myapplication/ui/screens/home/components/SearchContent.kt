@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -29,13 +30,13 @@ import androidx.compose.ui.unit.dp
 import com.rndeveloper.myapplication.R
 import com.rndeveloper.myapplication.data.datasource.remote.City
 import com.rndeveloper.myapplication.ui.screens.home.HomeAction
-import com.rndeveloper.myapplication.ui.screens.home.HomeViewModel
 
 @Composable
 fun SearchContent(
-    keyboardController: SoftwareKeyboardController?,
-    state: HomeViewModel.UiState,
+    favCities: List<City>,
+    searchedCities: List<City>,
     onAction: (HomeAction) -> Unit,
+    keyboardController: SoftwareKeyboardController? = null,
 ) {
     var cityName by remember { mutableStateOf("") }
 
@@ -44,7 +45,7 @@ fun SearchContent(
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        TextField(
+        OutlinedTextField(
             value = cityName,
             onValueChange = { newCityName ->
                 cityName = newCityName
@@ -61,15 +62,15 @@ fun SearchContent(
         )
 
         LazyColumn {
-            items(state.searchedCities) { city ->
+            items(searchedCities) { city ->
                 CityItem(
                     city = city,
-                    favCities = state.favCities,
+                    favCities = favCities,
                     onSaveCity = {
                         onAction(
                             HomeAction.OnToggleCity(
                                 city,
-                                state.favCities.contains(city)
+                                favCities.contains(city)
                             )
                         )
                     },

@@ -11,7 +11,7 @@ class WeatherRemoteDataSource {
         WeatherClient
             .instance
             .fetchWeather(lat = lat, lon = lon)
-            .toDomainModel()
+            .toDomainModel(lat = lat, lon = lon)
 
     suspend fun searchCities(query: String): List<City> {
         return try {
@@ -23,9 +23,13 @@ class WeatherRemoteDataSource {
     }
 }
 
-private fun RemoteWeather.toDomainModel(): Weather {
+private fun RemoteWeather.toDomainModel(lat: Double, lon: Double): Weather {
+    val currentTime = System.currentTimeMillis()
     return Weather(
         current = this.current.toCurrentWeather(),
-        forecast = this.daily.toDailyForecastList()
+        forecast = this.daily.toDailyForecastList(),
+        lastUpdated = currentTime,
+        lat = lat,
+        lon = lon
     )
 }
