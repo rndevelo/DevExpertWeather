@@ -3,9 +3,9 @@ package com.rndeveloper.myapplication.ui.screens.forecast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rndeveloper.myapplication.Result
-import com.rndeveloper.myapplication.data.Weather
-import com.rndeveloper.myapplication.data.WeatherRepository
+import com.rndeveloper.myapplication.domain.Weather
 import com.rndeveloper.myapplication.stateAsResultIn
+import com.rndeveloper.myapplication.usecases.GetWeatherUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -16,12 +16,12 @@ class ForecastViewModel(
     private val cityName: String,
     lat: Double,
     lon: Double,
-    weatherRepository: WeatherRepository
+    getWeatherUseCase: GetWeatherUseCase,
 ) : ViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val weatherState: StateFlow<Result<Weather?>> =
-        weatherRepository.weather(lat, lon).stateAsResultIn(viewModelScope)
+    val weatherState: StateFlow<Result<Weather>> =
+        getWeatherUseCase(lat, lon).stateAsResultIn(viewModelScope)
 
 
     // Combine del nombre + weather
@@ -39,6 +39,6 @@ class ForecastViewModel(
 
     data class UiState(
         val cityName: String = "",
-        val weather: Result<Weather?> = Result.Loading,
+        val weather: Result<Weather> = Result.Loading,
     )
 }

@@ -39,8 +39,8 @@ import androidx.compose.ui.unit.sp
 import com.rndeveloper.myapplication.R
 import com.rndeveloper.myapplication.Result
 import com.rndeveloper.myapplication.ShowResult
-import com.rndeveloper.myapplication.data.DailyForecast
-import com.rndeveloper.myapplication.data.Weather
+import com.rndeveloper.myapplication.domain.DailyForecast
+import com.rndeveloper.myapplication.domain.Weather
 import com.rndeveloper.myapplication.ui.screens.components.MyTopAppBar
 
 
@@ -54,7 +54,7 @@ fun ForecastScreen(
     val state by vm.uiState.collectAsState()
 
     state.weather.ShowResult {
-        (state.weather as Result.Success<Weather?>).data?.forecast?.let { forecast ->
+        (state.weather as Result.Success<Weather>).data.forecast.let { forecast ->
             ForecastContent(
                 cityName = state.cityName,
                 forecast = forecast,

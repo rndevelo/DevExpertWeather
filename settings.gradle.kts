@@ -20,5 +20,8 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "DevExpertWeather"
+
 include(":app")
- 
+include(":domain")
+include(":data")
+include(":usecases")

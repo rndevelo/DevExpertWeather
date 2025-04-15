@@ -2,6 +2,7 @@ package com.rndeveloper.myapplication.ui.screens.home
 
 import android.Manifest
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -40,9 +41,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rndeveloper.myapplication.R
 import com.rndeveloper.myapplication.Result
-import com.rndeveloper.myapplication.common.PermissionRequestEffect
-import com.rndeveloper.myapplication.data.Weather
-import com.rndeveloper.myapplication.data.datasource.remote.City
+import com.rndeveloper.myapplication.ui.screens.home.components.PermissionRequestEffect
+import com.rndeveloper.myapplication.domain.City
+import com.rndeveloper.myapplication.domain.Weather
 import com.rndeveloper.myapplication.ui.screens.Screen
 import com.rndeveloper.myapplication.ui.screens.components.ErrorText
 import com.rndeveloper.myapplication.ui.screens.components.LoadingAnimation
@@ -109,8 +110,8 @@ fun HomeScreen(
                     onForecastClick = {
                         onForecastClick(
                             state.selectedCity?.name ?: "",
-                            state.selectedCity?.latitude.toString(),
-                            state.selectedCity?.longitude.toString()
+                            state.selectedCity?.lat.toString(),
+                            state.selectedCity?.lon.toString()
                         )
                     }
                 )
@@ -118,6 +119,7 @@ fun HomeScreen(
 
             is Result.Error -> {
                 ErrorText(error = (state.weatherResult as Result.Error).exception)
+                Log.d("WeatherError", "HomeScreen: ${(state.weatherResult as Result.Error).exception}")
             }
         }
     }

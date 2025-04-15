@@ -3,11 +3,14 @@ package com.rndeveloper.myapplication.ui.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rndeveloper.myapplication.Result
-import com.rndeveloper.myapplication.data.RegionRepository
-import com.rndeveloper.myapplication.data.Weather
-import com.rndeveloper.myapplication.data.WeatherRepository
-import com.rndeveloper.myapplication.data.datasource.remote.City
+import com.rndeveloper.myapplication.domain.City
+import com.rndeveloper.myapplication.domain.Weather
 import com.rndeveloper.myapplication.stateAsResultIn
+import com.rndeveloper.myapplication.usecases.GetFavCitiesUseCase
+import com.rndeveloper.myapplication.usecases.GetLocationCityUseCase
+import com.rndeveloper.myapplication.usecases.GetWeatherUseCase
+import com.rndeveloper.myapplication.usecases.SearchCitiesUseCase
+import com.rndeveloper.myapplication.usecases.ToggleCityUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,8 +30,11 @@ sealed interface HomeAction {
 }
 
 class HomeViewModel(
-    private val weatherRepository: WeatherRepository,
-    private val regionRepository: RegionRepository,
+    private val getWeatherUseCase: GetWeatherUseCase,
+    getFavCitiesUseCase: GetFavCitiesUseCase,
+    private val searchCitiesUseCase: SearchCitiesUseCase,
+    private val toggleCityUseCase: ToggleCityUseCase,
+    private val getLocalCityUseCase: GetLocationCityUseCase,
 ) : ViewModel() {
 
     // 🔁 Esto es controlable manualmente o por lógica de inicio
@@ -41,14 +47,14 @@ class HomeViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val favCitiesState: StateFlow<Result<List<City>>> =
-        weatherRepository.favCities.stateAsResultIn(viewModelScope)
+        getFavCitiesUseCase().stateAsResultIn(viewModelScope)
 
     // 🌦 Estado del clima según la ciudad seleccionada
     @OptIn(ExperimentalCoroutinesApi::class)
     val weatherState: StateFlow<Result<Weather>> = selectedCityState
         .filterNotNull()
         .flatMapLatest { city ->
-            weatherRepository.weather(city.latitude, city.longitude)
+            getWeatherUseCase(city.lat, city.lon)
         }
         .stateAsResultIn(viewModelScope)
 
@@ -72,13 +78,13 @@ class HomeViewModel(
             },
             selectedCity = selectedCity,
 
-        )
+            )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState())
 
 
     data class UiState(
         val isLoading: Boolean = false,
-        val weatherResult:  Result<Weather> = Result.Loading,
+        val weatherResult: Result<Weather> = Result.Loading,
         val favCities: List<City> = emptyList(),
         val searchedCities: List<City> = emptyList(),
         val selectedCity: City? = null,
@@ -87,20 +93,20 @@ class HomeViewModel(
     fun onAction(action: HomeAction) {
         when (action) {
             is HomeAction.OnGetCityByLocation -> viewModelScope.launch {
-                regionRepository.findLastLocationCityInfo().let { city ->
+                getLocalCityUseCase()?.let { city ->
                     _selectedCityState.value =
-                        weatherRepository.searchCities(query = "${city.name}, ${city.country}")
+                        searchCitiesUseCase(query = "${city.name}, ${city.country}")
                             .firstOrNull()
                 }
             }
 
             is HomeAction.OnSearchCities -> viewModelScope.launch {
-                _searchedCitiesState.value = weatherRepository.searchCities(action.query)
+                _searchedCitiesState.value = searchCitiesUseCase(action.query)
             }
 
             is HomeAction.OnSelectedCity -> _selectedCityState.value = action.city
             is HomeAction.OnToggleCity -> viewModelScope.launch {
-                weatherRepository.toggleFavCity(action.city, action.isFav)
+                toggleCityUseCase(action.city, action.isFav)
             }
         }
     }
