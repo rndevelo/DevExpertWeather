@@ -3,9 +3,9 @@ package com.rndeveloper.myapplication.ui.screens.forecast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rndeveloper.myapplication.Result
-import com.rndeveloper.myapplication.domain.Weather
 import com.rndeveloper.myapplication.stateAsResultIn
-import com.rndeveloper.myapplication.usecases.GetWeatherUseCase
+import com.rndeveloper.myapplication.weather.model.Weather
+import com.rndeveloper.myapplication.weather.usecases.GetWeatherUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

@@ -4,8 +4,8 @@ import androidx.room.Entity
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rndeveloper.myapplication.domain.Current
-import com.rndeveloper.myapplication.domain.DailyForecast
+import com.rndeveloper.myapplication.weather.model.Current
+import com.rndeveloper.myapplication.weather.model.DailyForecast
 
 @Entity(primaryKeys = ["lat", "lon"])
 data class DbWeather(

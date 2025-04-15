@@ -41,9 +41,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rndeveloper.myapplication.R
 import com.rndeveloper.myapplication.Result
+import com.rndeveloper.myapplication.common.City
 import com.rndeveloper.myapplication.ui.screens.home.components.PermissionRequestEffect
-import com.rndeveloper.myapplication.domain.City
-import com.rndeveloper.myapplication.domain.Weather
 import com.rndeveloper.myapplication.ui.screens.Screen
 import com.rndeveloper.myapplication.ui.screens.components.ErrorText
 import com.rndeveloper.myapplication.ui.screens.components.LoadingAnimation
@@ -53,6 +52,7 @@ import com.rndeveloper.myapplication.ui.screens.home.components.FavouriteIconBut
 import com.rndeveloper.myapplication.ui.screens.home.components.SearchContent
 import com.rndeveloper.myapplication.ui.screens.home.components.ShowDialogIfPermissionIsDenied
 import com.rndeveloper.myapplication.ui.theme.DevExpertWeatherTheme
+import com.rndeveloper.myapplication.weather.model.Weather
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)

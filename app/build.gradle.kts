@@ -53,9 +53,11 @@ android {
 
 dependencies {
 
-    implementation(project(":domain"))
-    implementation(project(":data"))
-    implementation(project(":usecases"))
+    implementation(project(":domain:common"))
+    implementation(project(":domain:location"))
+    implementation(project(":domain:weather"))
+    implementation(project(":data:location"))
+    implementation(project(":data:weather"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

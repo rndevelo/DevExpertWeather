@@ -12,22 +12,22 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.android.gms.location.LocationServices
 import com.rndeveloper.myapplication.App
-import com.rndeveloper.myapplication.data.RegionRepository
-import com.rndeveloper.myapplication.data.WeatherRepository
 import com.rndeveloper.myapplication.framework.GeocoderRegionDataSource
 import com.rndeveloper.myapplication.framework.PlayServicesLocationDataSource
 import com.rndeveloper.myapplication.framework.WeatherRoomDataSource
 import com.rndeveloper.myapplication.framework.WeatherServerDataSource
 import com.rndeveloper.myapplication.framework.remote.WeatherClient
+import com.rndeveloper.myapplication.location.GetLocationCityUseCase
+import com.rndeveloper.myapplication.location.RegionRepositoryImpl
 import com.rndeveloper.myapplication.ui.screens.forecast.ForecastScreen
 import com.rndeveloper.myapplication.ui.screens.forecast.ForecastViewModel
 import com.rndeveloper.myapplication.ui.screens.home.HomeScreen
 import com.rndeveloper.myapplication.ui.screens.home.HomeViewModel
-import com.rndeveloper.myapplication.usecases.GetFavCitiesUseCase
-import com.rndeveloper.myapplication.usecases.GetLocationCityUseCase
-import com.rndeveloper.myapplication.usecases.GetWeatherUseCase
-import com.rndeveloper.myapplication.usecases.SearchCitiesUseCase
-import com.rndeveloper.myapplication.usecases.ToggleCityUseCase
+import com.rndeveloper.myapplication.weather.WeatherRepositoryImpl
+import com.rndeveloper.myapplication.weather.usecases.GetFavCitiesUseCase
+import com.rndeveloper.myapplication.weather.usecases.GetWeatherUseCase
+import com.rndeveloper.myapplication.weather.usecases.SearchCitiesUseCase
+import com.rndeveloper.myapplication.weather.usecases.ToggleCityUseCase
 
 @SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
@@ -38,12 +38,12 @@ fun Navigation() {
     val app = LocalContext.current.applicationContext as App
 
     val weatherRepository =
-        WeatherRepository(
+        WeatherRepositoryImpl(
             WeatherRoomDataSource(app.db.weatherDao()), WeatherServerDataSource(
                 WeatherClient.instance
             )
         )
-    val regionRepository = RegionRepository(
+    val regionRepository = RegionRepositoryImpl(
         GeocoderRegionDataSource(
             Geocoder(app),
             PlayServicesLocationDataSource(LocationServices.getFusedLocationProviderClient(app))

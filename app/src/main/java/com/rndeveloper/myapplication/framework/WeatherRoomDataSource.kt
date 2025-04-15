@@ -1,11 +1,11 @@
 package com.rndeveloper.myapplication.framework
 
-import com.rndeveloper.myapplication.data.datasource.WeatherLocalDataSource
-import com.rndeveloper.myapplication.domain.City
-import com.rndeveloper.myapplication.domain.Weather
+import com.rndeveloper.myapplication.common.City
 import com.rndeveloper.myapplication.framework.database.DbCity
 import com.rndeveloper.myapplication.framework.database.DbWeather
 import com.rndeveloper.myapplication.framework.database.WeatherDao
+import com.rndeveloper.myapplication.weather.WeatherLocalDataSource
+import com.rndeveloper.myapplication.weather.model.Weather
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

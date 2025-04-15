@@ -5,9 +5,9 @@ import android.location.Geocoder
 import android.os.Build
 import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
-import com.rndeveloper.myapplication.data.datasource.LocationDataSource
-import com.rndeveloper.myapplication.data.datasource.RegionDataSource
-import com.rndeveloper.myapplication.domain.City
+import com.rndeveloper.myapplication.common.City
+import com.rndeveloper.myapplication.location.LocationDataSource
+import com.rndeveloper.myapplication.location.RegionDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext

@@ -1,10 +1,10 @@
 package com.rndeveloper.myapplication.framework
 
-import com.rndeveloper.myapplication.data.datasource.WeatherRemoteDataSource
-import com.rndeveloper.myapplication.domain.City
-import com.rndeveloper.myapplication.domain.Weather
+import com.rndeveloper.myapplication.common.City
 import com.rndeveloper.myapplication.framework.remote.RemoteWeather
 import com.rndeveloper.myapplication.framework.remote.WeatherService
+import com.rndeveloper.myapplication.weather.WeatherRemoteDataSource
+import com.rndeveloper.myapplication.weather.model.Weather
 
 class WeatherServerDataSource(private val weatherClient: WeatherService) : WeatherRemoteDataSource {
 

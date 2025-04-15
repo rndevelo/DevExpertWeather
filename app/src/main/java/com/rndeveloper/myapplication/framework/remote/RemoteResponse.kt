@@ -2,9 +2,9 @@ package com.rndeveloper.myapplication.framework.remote
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.rndeveloper.myapplication.domain.City
-import com.rndeveloper.myapplication.domain.Current
-import com.rndeveloper.myapplication.domain.DailyForecast
+import com.rndeveloper.myapplication.common.City
+import com.rndeveloper.myapplication.weather.model.Current
+import com.rndeveloper.myapplication.weather.model.DailyForecast
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.LocalDate

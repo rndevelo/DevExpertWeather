@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.rndeveloper.myapplication.R
-import com.rndeveloper.myapplication.domain.City
+import com.rndeveloper.myapplication.common.City
 import com.rndeveloper.myapplication.ui.screens.home.HomeAction
 
 @Composable

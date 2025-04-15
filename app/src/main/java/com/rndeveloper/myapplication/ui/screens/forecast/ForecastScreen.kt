@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,9 +39,9 @@ import androidx.compose.ui.unit.sp
 import com.rndeveloper.myapplication.R
 import com.rndeveloper.myapplication.Result
 import com.rndeveloper.myapplication.ShowResult
-import com.rndeveloper.myapplication.domain.DailyForecast
-import com.rndeveloper.myapplication.domain.Weather
 import com.rndeveloper.myapplication.ui.screens.components.MyTopAppBar
+import com.rndeveloper.myapplication.weather.model.DailyForecast
+import com.rndeveloper.myapplication.weather.model.Weather
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -86,8 +86,8 @@ private fun ForecastContent(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = Icons.Default.ArrowBack.toString()
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = Icons.AutoMirrored.Filled.ArrowBack.toString()
                         )
                     }
                 },
