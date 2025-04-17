@@ -51,6 +51,8 @@ import com.rndeveloper.myapplication.home.composables.PermissionRequestEffect
 import com.rndeveloper.myapplication.home.composables.SearchContent
 import com.rndeveloper.myapplication.home.composables.ShowDialogIfPermissionIsDenied
 import com.rndeveloper.myapplication.weather.model.Weather
+import com.rndeveloper.myapplication.feature.home.R
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)

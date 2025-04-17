@@ -1,23 +1,11 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    id("rndeveloper.android.library")
 }
 
 android {
-    namespace = "com.rndeveloper.myapplication.location"
-    compileSdk = 35
-
-    defaultConfig {
-        minSdk = 24
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
+    namespace = "com.rndeveloper.myapplication.framework.location"
 }
+
 dependencies {
     implementation(project(":domain:common"))
     implementation(project(":data:location"))

@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.rndeveloper.myapplication.common.City
+import com.rndeveloper.myapplication.feature.home.R
 import com.rndeveloper.myapplication.home.HomeAction
-import com.rndeveloper.myapplication.home.R
 
 @Composable
 fun ShowDialogIfPermissionIsDenied(

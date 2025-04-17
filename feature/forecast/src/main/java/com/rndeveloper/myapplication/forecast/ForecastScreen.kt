@@ -41,6 +41,7 @@ import com.rndeveloper.myapplication.common.Result
 import com.rndeveloper.myapplication.common.ShowResult
 import com.rndeveloper.myapplication.weather.model.DailyForecast
 import com.rndeveloper.myapplication.weather.model.Weather
+import com.rndeveloper.myapplication.feature.forecast.R
 
 
 @RequiresApi(Build.VERSION_CODES.O)
