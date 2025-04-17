@@ -58,6 +58,12 @@ dependencies {
     implementation(project(":domain:weather"))
     implementation(project(":data:location"))
     implementation(project(":data:weather"))
+    implementation(project(":framework:location"))
+    implementation(project(":framework:weather"))
+    implementation(project(":feature:common"))
+    implementation(project(":feature:home"))
+    implementation(project(":feature:forecast"))
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
