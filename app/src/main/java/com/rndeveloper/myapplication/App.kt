@@ -2,7 +2,7 @@ package com.rndeveloper.myapplication
 
 import android.app.Application
 import androidx.room.Room
-import com.rndeveloper.myapplication.data.datasource.database.WeatherDatabase
+import com.rndeveloper.myapplication.weather.local.WeatherDatabase
 
 class App : Application() {
 

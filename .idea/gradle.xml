@@ -11,6 +11,13 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/data" />
+            <option value="$PROJECT_DIR$/data/location" />
+            <option value="$PROJECT_DIR$/data/weather" />
+            <option value="$PROJECT_DIR$/domain" />
+            <option value="$PROJECT_DIR$/domain/common" />
+            <option value="$PROJECT_DIR$/domain/location" />
+            <option value="$PROJECT_DIR$/domain/weather" />
           </set>
         </option>
       </GradleProjectSettings>

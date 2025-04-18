@@ -1,22 +1,16 @@
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlinxSerialization)
-    alias(libs.plugins.ksp)
-
+    id("rndeveloper.android.application")
+    id("rndeveloper.android.application.compose")
+    id("rndeveloper.android.room")
 }
 
 android {
     namespace = "com.rndeveloper.myapplication"
-    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.rndeveloper.myapplication"
-        minSdk = 24
-        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -38,50 +32,29 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
     buildFeatures {
-        compose = true
         buildConfig = true
     }
 }
 
 dependencies {
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+    implementation(project(":domain:common"))
+    implementation(project(":domain:location"))
+    implementation(project(":domain:weather"))
+    implementation(project(":data:location"))
+    implementation(project(":data:weather"))
+    implementation(project(":framework:location"))
+    implementation(project(":framework:weather"))
+    implementation(project(":feature:common"))
+    implementation(project(":feature:home"))
+    implementation(project(":feature:forecast"))
 
 //    Navigation
     implementation(libs.androidx.navigation.compose)
 
 //    Location
     implementation(libs.play.services.location)
-
-//    Retrofit
-    implementation(libs.retrofit)
-//    He tenido que incluir esta librería porque no me compilaban varios objetos para configurar retrofit
-    implementation (libs.okhttp)
-    implementation(libs.retrofit.converter.kotlinx.serialization)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.gson)
-
-//    Coil
-    implementation(libs.coil.compose)
-
-//    Room
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

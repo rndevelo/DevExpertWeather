@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google {
             content {
@@ -20,5 +21,19 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "DevExpertWeather"
+
 include(":app")
- 
+
+include(":domain:weather")
+include(":domain:location")
+include(":domain:common")
+
+include(":data:location")
+include(":data:weather")
+
+include(":framework:location")
+include(":framework:weather")
+
+include(":feature:common")
+include(":feature:home")
+include(":feature:forecast")
