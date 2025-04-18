@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import com.google.android.gms.location.LocationServices
 import com.rndeveloper.myapplication.App
 import com.rndeveloper.myapplication.home.HomeScreen
@@ -52,9 +53,9 @@ fun Navigation() {
 
     NavHost(
         navController = navController,
-        startDestination = NavScreen.Home.route
+        startDestination = Home
     ) {
-        composable(NavScreen.Home.route) {
+        composable<Home> {
 
             HomeScreen(
                 vm = viewModel {
@@ -67,31 +68,20 @@ fun Navigation() {
                     )
                 },
                 onForecastClick = { cityName: String, lat: String, long: String ->
-                    navController.navigate(NavScreen.Forecast.createRoute(cityName, lat, long))
+                    navController.navigate(Forecast(cityName, lat, long))
                 }
             )
         }
-        composable(
-            route = NavScreen.Forecast.route,
-            arguments = listOf(
-                navArgument(NavArgs.CityName.key) { type = NavType.StringType },
-                navArgument(NavArgs.Lat.key) {
-                    type = NavType.StringType
-                },  // Double no es soportado, usa String
-                navArgument(NavArgs.Long.key) {
-                    type = NavType.StringType
-                }  // Double no es soportado, usa String
-            )
-        ) { backStackEntry ->
-            val cityName = requireNotNull(backStackEntry.arguments?.getString(NavArgs.CityName.key))
-            val lat =
-                requireNotNull(backStackEntry.arguments?.getString(NavArgs.Lat.key)).toDouble()
-            val long =
-                requireNotNull(backStackEntry.arguments?.getString(NavArgs.Long.key)).toDouble()
-
+        composable<Forecast> { backStackEntry ->
+            val forecast = backStackEntry.toRoute<Forecast>()
             ForecastScreen(
                 vm = viewModel {
-                    ForecastViewModel(cityName, lat, long, GetWeatherUseCase(weatherRepository))
+                    ForecastViewModel(
+                        forecast.cityName,
+                        forecast.lat,
+                        forecast.long,
+                        GetWeatherUseCase(weatherRepository)
+                    )
                 },
                 onBack = { navController.popBackStack() })
         }

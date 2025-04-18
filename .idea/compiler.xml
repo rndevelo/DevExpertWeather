@@ -2,6 +2,9 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="build-logic.convention" target="21" />
+      <module name="build-logic.convention.main" target="21" />
+      <module name="build-logic.convention.test" target="21" />
       <module name="DevExpertWeather.common" target="11" />
       <module name="DevExpertWeather.common.main" target="11" />
       <module name="DevExpertWeather.common.test" target="11" />
@@ -16,8 +19,14 @@
       <module name="DevExpertWeather.date" target="11" />
       <module name="DevExpertWeather.date.main" target="11" />
       <module name="DevExpertWeather.date.test" target="11" />
+      <module name="DevExpertWeather.domain.common.test" target="17" />
       <module name="DevExpertWeather.domain.main" target="11" />
       <module name="DevExpertWeather.domain.test" target="11" />
+      <module name="DevExpertWeather.feature.common" target="21" />
+      <module name="DevExpertWeather.feature.forecast" target="21" />
+      <module name="DevExpertWeather.feature.home" target="21" />
+      <module name="DevExpertWeather.framework.location" target="21" />
+      <module name="DevExpertWeather.framework.weather" target="21" />
       <module name="DevExpertWeather.location" target="11" />
       <module name="DevExpertWeather.location.main" target="11" />
       <module name="DevExpertWeather.location.test" target="11" />

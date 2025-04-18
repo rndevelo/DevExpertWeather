@@ -14,14 +14,14 @@ import kotlinx.coroutines.flow.stateIn
 
 class ForecastViewModel(
     private val cityName: String,
-    lat: Double,
-    lon: Double,
+    lat: String,
+    lon: String,
     getWeatherUseCase: GetWeatherUseCase,
 ) : ViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val weatherState: StateFlow<Result<Weather>> =
-        getWeatherUseCase(lat, lon).stateAsResultIn(viewModelScope)
+        getWeatherUseCase(lat.toDouble(), lon.toDouble()).stateAsResultIn(viewModelScope)
 
 
     // Combine del nombre + weather
