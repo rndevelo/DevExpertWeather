@@ -1,5 +1,6 @@
 plugins {
     id("rndeveloper.android.library.compose")
+    id("rndeveloper.di.library.compose")
 }
 
 android {

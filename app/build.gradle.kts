@@ -3,7 +3,7 @@ import java.util.Properties
 plugins {
     id("rndeveloper.android.application")
     id("rndeveloper.android.application.compose")
-    id("rndeveloper.android.room")
+    id("rndeveloper.di.library.compose")
     alias(libs.plugins.kotlinxSerialization)
 }
 
@@ -56,9 +56,6 @@ dependencies {
 
 //    Serialization
     implementation(libs.kotlinx.serialization.json)
-
-//    Location
-    implementation(libs.play.services.location)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
