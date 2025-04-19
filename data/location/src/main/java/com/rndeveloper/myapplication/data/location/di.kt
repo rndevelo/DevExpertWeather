@@ -1,10 +1,8 @@
 package com.rndeveloper.myapplication.data.location
 
-import com.rndeveloper.myapplication.domain.location.RegionRepository
-import org.koin.core.module.dsl.factoryOf
-import org.koin.dsl.bind
-import org.koin.dsl.module
+import org.koin.core.annotation.ComponentScan
+import org.koin.core.annotation.Module
 
-val dataLocationModule = module {
-    factoryOf(::RegionRepositoryImpl) bind RegionRepository::class
-}
+@Module
+@ComponentScan
+class DataLocationModule

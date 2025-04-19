@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
+import org.koin.core.annotation.Factory
 
+@Factory
 class WeatherRepositoryImpl(
     private val weatherLocalDataSource: WeatherLocalDataSource,
     private val weatherRemoteDataSource: WeatherRemoteDataSource,

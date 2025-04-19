@@ -5,7 +5,9 @@ import com.rndeveloper.myapplication.data.weather.WeatherLocalDataSource
 import com.rndeveloper.myapplication.domain.weather.model.Weather
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Factory
 
+@Factory
 internal class WeatherRoomDataSource(private val weatherDao: WeatherDao) : WeatherLocalDataSource {
 
     // Métodos para interactuar con la base de datos local usando el DAO

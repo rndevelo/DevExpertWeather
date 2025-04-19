@@ -6,8 +6,10 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.rndeveloper.myapplication.data.location.LocationDataSource
 import com.rndeveloper.myapplication.domain.common.City
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.koin.core.annotation.Factory
 import kotlin.coroutines.resume
 
+@Factory
 class PlayServicesLocationDataSource(private val fusedLocationClient: FusedLocationProviderClient) :
     LocationDataSource {
 

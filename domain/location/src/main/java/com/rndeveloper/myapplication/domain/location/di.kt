@@ -1,8 +1,8 @@
 package com.rndeveloper.myapplication.domain.location
 
-import org.koin.core.module.dsl.factoryOf
-import org.koin.dsl.module
+import org.koin.core.annotation.ComponentScan
+import org.koin.core.annotation.Module
 
-val domainLocationModule = module {
-    factoryOf(::GetLocationCityUseCase)
-}
+@Module
+@ComponentScan
+class DomainLocationModule

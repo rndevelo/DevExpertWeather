@@ -11,8 +11,10 @@ import com.rndeveloper.myapplication.data.location.RegionDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import org.koin.core.annotation.Factory
 import kotlin.coroutines.resume
 
+@Factory
 class GeocoderRegionDataSource(
     private val geocoder: Geocoder,
     private val locationDataSource: LocationDataSource

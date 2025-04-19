@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 
 sealed interface HomeAction {
     data class OnSearchCities(val query: String) : HomeAction
@@ -29,6 +30,7 @@ sealed interface HomeAction {
     data class OnToggleCity(val city: City, val isFav: Boolean) : HomeAction
 }
 
+@KoinViewModel
 class HomeViewModel(
     private val getWeatherUseCase: GetWeatherUseCase,
     getFavCitiesUseCase: GetFavCitiesUseCase,

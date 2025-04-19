@@ -1,10 +1,8 @@
 package com.rndeveloper.myapplication.data.weather
 
-import com.rndeveloper.myapplication.domain.weather.WeatherRepository
-import org.koin.core.module.dsl.factoryOf
-import org.koin.dsl.bind
-import org.koin.dsl.module
+import org.koin.core.annotation.ComponentScan
+import org.koin.core.annotation.Module
 
-val dataWeatherModule = module {
-    factoryOf(::WeatherRepositoryImpl) bind WeatherRepository::class
-}
+@Module
+@ComponentScan
+class DataWeatherModule

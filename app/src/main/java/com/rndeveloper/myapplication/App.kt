@@ -1,18 +1,21 @@
 package com.rndeveloper.myapplication
 
 import android.app.Application
-import com.rndeveloper.myapplication.feature.forecast.featureForecastModule
-import com.rndeveloper.myapplication.feature.home.featureHomeModule
-import com.rndeveloper.myapplication.data.location.dataLocationModule
-import com.rndeveloper.myapplication.domain.location.domainLocationModule
+import com.rndeveloper.myapplication.data.location.DataLocationModule
+import com.rndeveloper.myapplication.data.weather.DataWeatherModule
+import com.rndeveloper.myapplication.domain.location.DomainLocationModule
+import com.rndeveloper.myapplication.domain.weather.DomainWeatherModule
+import com.rndeveloper.myapplication.feature.forecast.FeatureForecastModule
+import com.rndeveloper.myapplication.feature.home.FeatureHomeModule
+import com.rndeveloper.myapplication.framework.location.FrameworkLocationModule
 import com.rndeveloper.myapplication.framework.location.frameworkLocationModule
-import com.rndeveloper.myapplication.data.weather.dataWeatherModule
-import com.rndeveloper.myapplication.domain.weather.domainWeatherModule
+import com.rndeveloper.myapplication.framework.weather.FrameworkWeatherModule
 import com.rndeveloper.myapplication.framework.weather.frameworkWeatherModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
+import org.koin.ksp.generated.module
 
 class App : Application() {
 
@@ -25,12 +28,14 @@ class App : Application() {
             modules(
                 frameworkLocationModule,
                 frameworkWeatherModule,
-                featureHomeModule,
-                featureForecastModule,
-                dataLocationModule,
-                dataWeatherModule,
-                domainLocationModule,
-                domainWeatherModule,
+                FrameworkLocationModule().module,
+                FrameworkWeatherModule().module,
+                FeatureHomeModule().module,
+                FeatureForecastModule().module,
+                DataLocationModule().module,
+                DataWeatherModule().module,
+                DomainLocationModule().module,
+                DomainWeatherModule().module,
             )
         }
     }

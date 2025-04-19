@@ -1,8 +1,8 @@
 package com.rndeveloper.myapplication.feature.forecast
 
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.dsl.module
+import org.koin.core.annotation.ComponentScan
+import org.koin.core.annotation.Module
 
-val featureForecastModule = module {
-    viewModelOf(::ForecastViewModel)
-}
+@Module
+@ComponentScan
+class FeatureForecastModule

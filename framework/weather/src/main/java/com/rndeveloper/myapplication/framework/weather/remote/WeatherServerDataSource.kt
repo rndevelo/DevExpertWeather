@@ -3,7 +3,9 @@ package com.rndeveloper.myapplication.framework.weather.remote
 import com.rndeveloper.myapplication.domain.common.City
 import com.rndeveloper.myapplication.data.weather.WeatherRemoteDataSource
 import com.rndeveloper.myapplication.domain.weather.model.Weather
+import org.koin.core.annotation.Factory
 
+@Factory
 internal class WeatherServerDataSource(private val weatherClient: WeatherService) : WeatherRemoteDataSource {
 
     override suspend fun getWeather(lat: Double, lon: Double): Weather =
