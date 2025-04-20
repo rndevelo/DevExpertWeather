@@ -2,19 +2,20 @@ package com.rndeveloper.myapplication.feature.forecast
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rndeveloper.myapplication.feature.common.Result
-import com.rndeveloper.myapplication.feature.common.stateAsResultIn
 import com.rndeveloper.myapplication.domain.weather.model.Weather
 import com.rndeveloper.myapplication.domain.weather.usecases.GetWeatherUseCase
+import com.rndeveloper.myapplication.feature.common.Result
+import com.rndeveloper.myapplication.feature.common.stateAsResultIn
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import org.koin.android.annotation.KoinViewModel
 
-@KoinViewModel
-class ForecastViewModel(
+@HiltViewModel
+class ForecastViewModel @Inject constructor(
     private val cityName: String,
     lat: String,
     lon: String,

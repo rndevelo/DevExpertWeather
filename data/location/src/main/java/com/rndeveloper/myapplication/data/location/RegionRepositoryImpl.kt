@@ -2,9 +2,10 @@ package com.rndeveloper.myapplication.data.location
 
 import com.rndeveloper.myapplication.domain.common.City
 import com.rndeveloper.myapplication.domain.location.RegionRepository
-import org.koin.core.annotation.Factory
+import jakarta.inject.Inject
 
-@Factory
-class RegionRepositoryImpl(private val regionDataSource: RegionDataSource) : RegionRepository {
-    override suspend fun findLastLocationCityInfo(): City? = regionDataSource.findLastLocationCityInfo()
+class RegionRepositoryImpl @Inject constructor(private val regionDataSource: RegionDataSource) :
+    RegionRepository {
+    override suspend fun findLastLocationCityInfo(): City? =
+        regionDataSource.findLastLocationCityInfo()
 }

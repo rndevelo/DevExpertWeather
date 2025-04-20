@@ -3,14 +3,16 @@ package com.rndeveloper.myapplication.feature.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rndeveloper.myapplication.domain.common.City
-import com.rndeveloper.myapplication.feature.common.Result
-import com.rndeveloper.myapplication.feature.common.stateAsResultIn
 import com.rndeveloper.myapplication.domain.location.GetLocationCityUseCase
 import com.rndeveloper.myapplication.domain.weather.model.Weather
 import com.rndeveloper.myapplication.domain.weather.usecases.GetFavCitiesUseCase
 import com.rndeveloper.myapplication.domain.weather.usecases.GetWeatherUseCase
 import com.rndeveloper.myapplication.domain.weather.usecases.SearchCitiesUseCase
 import com.rndeveloper.myapplication.domain.weather.usecases.ToggleCityUseCase
+import com.rndeveloper.myapplication.feature.common.Result
+import com.rndeveloper.myapplication.feature.common.stateAsResultIn
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,7 +23,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.koin.android.annotation.KoinViewModel
 
 sealed interface HomeAction {
     data class OnSearchCities(val query: String) : HomeAction
@@ -30,8 +31,8 @@ sealed interface HomeAction {
     data class OnToggleCity(val city: City, val isFav: Boolean) : HomeAction
 }
 
-@KoinViewModel
-class HomeViewModel(
+@HiltViewModel
+class HomeViewModel @Inject constructor(
     private val getWeatherUseCase: GetWeatherUseCase,
     getFavCitiesUseCase: GetFavCitiesUseCase,
     private val searchCitiesUseCase: SearchCitiesUseCase,

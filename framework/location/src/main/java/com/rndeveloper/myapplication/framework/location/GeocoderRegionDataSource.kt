@@ -5,20 +5,19 @@ import android.location.Geocoder
 import android.os.Build
 import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
-import com.rndeveloper.myapplication.domain.common.City
 import com.rndeveloper.myapplication.data.location.LocationDataSource
 import com.rndeveloper.myapplication.data.location.RegionDataSource
+import com.rndeveloper.myapplication.domain.common.City
+import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import org.koin.core.annotation.Factory
 import kotlin.coroutines.resume
 
-@Factory
-class GeocoderRegionDataSource(
+class GeocoderRegionDataSource @Inject constructor(
     private val geocoder: Geocoder,
     private val locationDataSource: LocationDataSource
-): RegionDataSource {
+) : RegionDataSource {
 
     override suspend fun findLastLocationCityInfo(): City? =
         locationDataSource.findLastLocation()?.toCityInfo()
@@ -46,7 +45,8 @@ suspend fun Geocoder.getFromLocationCompat(
         getFromLocation(latitude, longitude, maxResults) {
             continuation.resume(it)
         }
-    }} else {
+    }
+} else {
     withContext(Dispatchers.IO) {
         getFromLocation(latitude, longitude, maxResults) ?: emptyList()
     }

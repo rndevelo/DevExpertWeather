@@ -2,10 +2,9 @@ package com.rndeveloper.myapplication.domain.weather.usecases
 
 import com.rndeveloper.myapplication.domain.common.City
 import com.rndeveloper.myapplication.domain.weather.WeatherRepository
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
-import org.koin.core.annotation.Factory
 
-@Factory
-class GetFavCitiesUseCase(private val weatherRepository: WeatherRepository) {
+class GetFavCitiesUseCase @Inject constructor(private val weatherRepository: WeatherRepository) {
     operator fun invoke(): Flow<List<City>> = weatherRepository.favCities
 }

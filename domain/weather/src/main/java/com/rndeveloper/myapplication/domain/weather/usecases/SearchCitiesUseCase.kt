@@ -1,9 +1,8 @@
 package com.rndeveloper.myapplication.domain.weather.usecases
 
 import com.rndeveloper.myapplication.domain.weather.WeatherRepository
-import org.koin.core.annotation.Factory
+import jakarta.inject.Inject
 
-@Factory
-class SearchCitiesUseCase(private val weatherRepository: WeatherRepository) {
+class SearchCitiesUseCase @Inject constructor(private val weatherRepository: WeatherRepository) {
     suspend operator fun invoke(query: String) = weatherRepository.searchCities(query)
 }

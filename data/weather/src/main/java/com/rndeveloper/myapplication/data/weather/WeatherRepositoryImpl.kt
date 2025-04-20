@@ -3,18 +3,17 @@ package com.rndeveloper.myapplication.data.weather
 import com.rndeveloper.myapplication.domain.common.City
 import com.rndeveloper.myapplication.domain.weather.WeatherRepository
 import com.rndeveloper.myapplication.domain.weather.model.Weather
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
-import org.koin.core.annotation.Factory
 
-@Factory
-class WeatherRepositoryImpl(
+class WeatherRepositoryImpl @Inject constructor(
     private val weatherLocalDataSource: WeatherLocalDataSource,
     private val weatherRemoteDataSource: WeatherRemoteDataSource,
-): WeatherRepository {
+) : WeatherRepository {
 
 
     override fun weather(lat: Double, lon: Double): Flow<Weather> = flow {
