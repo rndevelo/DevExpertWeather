@@ -4,7 +4,6 @@ plugins {
     id("rndeveloper.android.application")
     id("rndeveloper.android.application.compose")
     id("rndeveloper.di.library.compose")
-    alias(libs.plugins.kotlinxSerialization)
 }
 
 android {
@@ -53,9 +52,6 @@ dependencies {
 
 //    Navigation
     implementation(libs.androidx.navigation.compose)
-
-//    Serialization
-    implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

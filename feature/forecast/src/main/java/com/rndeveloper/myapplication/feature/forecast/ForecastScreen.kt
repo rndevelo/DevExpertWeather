@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.rndeveloper.myapplication.feature.common.MyTopAppBar
 import com.rndeveloper.myapplication.feature.common.Result
 import com.rndeveloper.myapplication.feature.common.ShowResult
@@ -47,7 +48,7 @@ import com.rndeveloper.myapplication.domain.weather.model.Weather
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForecastScreen(
-    vm: ForecastViewModel,
+    vm: ForecastViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
     val state by vm.uiState.collectAsState()

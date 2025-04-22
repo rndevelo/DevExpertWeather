@@ -12,7 +12,6 @@ import com.rndeveloper.myapplication.domain.weather.usecases.ToggleCityUseCase
 import com.rndeveloper.myapplication.feature.common.Result
 import com.rndeveloper.myapplication.feature.common.stateAsResultIn
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,6 +22,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 sealed interface HomeAction {
     data class OnSearchCities(val query: String) : HomeAction
@@ -37,7 +37,7 @@ class HomeViewModel @Inject constructor(
     getFavCitiesUseCase: GetFavCitiesUseCase,
     private val searchCitiesUseCase: SearchCitiesUseCase,
     private val toggleCityUseCase: ToggleCityUseCase,
-    private val getLocalCityUseCase: GetLocationCityUseCase,
+    private val getLocalCityUseCase: GetLocationCityUseCase
 ) : ViewModel() {
 
     // 🔁 Esto es controlable manualmente o por lógica de inicio

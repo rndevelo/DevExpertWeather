@@ -38,11 +38,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.rndeveloper.myapplication.feature.common.Result
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.rndeveloper.myapplication.domain.common.City
+import com.rndeveloper.myapplication.domain.weather.model.Weather
 import com.rndeveloper.myapplication.feature.common.ErrorText
 import com.rndeveloper.myapplication.feature.common.LoadingAnimation
 import com.rndeveloper.myapplication.feature.common.MyTopAppBar
+import com.rndeveloper.myapplication.feature.common.Result
 import com.rndeveloper.myapplication.feature.common.Screen
 import com.rndeveloper.myapplication.feature.common.theme.DevExpertWeatherTheme
 import com.rndeveloper.myapplication.feature.home.composables.FavCitiesContent
@@ -50,15 +52,13 @@ import com.rndeveloper.myapplication.feature.home.composables.FavouriteIconButto
 import com.rndeveloper.myapplication.feature.home.composables.PermissionRequestEffect
 import com.rndeveloper.myapplication.feature.home.composables.SearchContent
 import com.rndeveloper.myapplication.feature.home.composables.ShowDialogIfPermissionIsDenied
-import com.rndeveloper.myapplication.domain.weather.model.Weather
-import org.koin.androidx.compose.koinViewModel
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    vm: HomeViewModel = koinViewModel(),
+    vm: HomeViewModel = hiltViewModel(),
     onForecastClick: (String, String, String) -> Unit = { _, _, _ -> }
 ) {
 

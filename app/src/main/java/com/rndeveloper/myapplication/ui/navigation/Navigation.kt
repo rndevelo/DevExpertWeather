@@ -2,14 +2,15 @@ package com.rndeveloper.myapplication.ui.navigation
 
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.rndeveloper.myapplication.feature.common.Forecast
+import com.rndeveloper.myapplication.feature.common.Home
 import com.rndeveloper.myapplication.feature.forecast.ForecastScreen
 import com.rndeveloper.myapplication.feature.home.HomeScreen
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
@@ -22,7 +23,6 @@ fun Navigation() {
         startDestination = Home
     ) {
         composable<Home> {
-
             HomeScreen(
                 onForecastClick = { cityName: String, lat: String, long: String ->
                     navController.navigate(Forecast(cityName, lat, long))
@@ -31,18 +31,7 @@ fun Navigation() {
         }
         composable<Forecast> { backStackEntry ->
             val forecast = backStackEntry.toRoute<Forecast>()
-
-            ForecastScreen(
-                vm = koinViewModel(
-                    parameters = {
-                        parametersOf(
-                            forecast.cityName,
-                            forecast.lat,
-                            forecast.long,
-                        )
-                    }
-                ),
-                onBack = { navController.popBackStack() })
+            ForecastScreen(onBack = { navController.popBackStack() })
         }
     }
 }

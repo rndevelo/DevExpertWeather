@@ -1,8 +1,15 @@
 package com.rndeveloper.myapplication.data.weather
 
-import org.koin.core.annotation.ComponentScan
-import org.koin.core.annotation.Module
+import com.rndeveloper.myapplication.domain.weather.WeatherRepository
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
 @Module
-@ComponentScan
-class DataWeatherModule
+@InstallIn(SingletonComponent::class)
+internal abstract class DataWeatherBindsModule {
+
+    @Binds
+    abstract fun bindLocationDataSource(impl: WeatherRepositoryImpl): WeatherRepository
+}

@@ -1,5 +1,6 @@
 package com.rndeveloper.myapplication.framework.location
 
+import android.app.Application
 import android.content.Context
 import android.location.Geocoder
 import com.google.android.gms.location.LocationServices
@@ -10,6 +11,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -28,9 +30,9 @@ internal abstract class FrameworkLocationBindsModule {
 internal class FrameworkLocationModule {
 
     @Provides
-    fun provideFusedLocationProviderClient(context: Context) =
-        LocationServices.getFusedLocationProviderClient(context)
+    fun provideFusedLocationProviderClient(app: Application) =
+        LocationServices.getFusedLocationProviderClient(app)
 
     @Provides
-    fun provideGeocoder(context: Context) = Geocoder(context)
+    fun provideGeocoder(app: Application) = Geocoder(app)
 }

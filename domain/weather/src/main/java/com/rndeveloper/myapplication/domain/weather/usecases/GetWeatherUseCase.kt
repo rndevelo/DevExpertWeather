@@ -2,7 +2,7 @@ package com.rndeveloper.myapplication.domain.weather.usecases
 
 import com.rndeveloper.myapplication.domain.weather.WeatherRepository
 import com.rndeveloper.myapplication.domain.weather.model.Weather
-import jakarta.inject.Inject
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 
 class GetWeatherUseCase @Inject constructor(private val weatherRepository: WeatherRepository) {

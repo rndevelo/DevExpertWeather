@@ -1,8 +1,15 @@
 package com.rndeveloper.myapplication.data.location
 
-import org.koin.core.annotation.ComponentScan
-import org.koin.core.annotation.Module
+import com.rndeveloper.myapplication.domain.location.RegionRepository
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
 @Module
-@ComponentScan
-class DataLocationModule
+@InstallIn(SingletonComponent::class)
+internal abstract class DataLocationBindsModule {
+
+    @Binds
+    abstract fun bindLocationDataSource(impl: RegionRepositoryImpl): RegionRepository
+}
