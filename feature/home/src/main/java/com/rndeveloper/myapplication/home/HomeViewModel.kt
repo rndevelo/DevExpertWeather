@@ -59,7 +59,7 @@ class HomeViewModel(
         .stateAsResultIn(viewModelScope)
 
     // 📌 Combina todo en un solo estado reactivo de la UI
-    val uiState: StateFlow<UiState> = combine(
+    val uiState: StateFlow<Result<UiState>> = combine(
         weatherState,
         searchedCitiesState,
         favCitiesState,
@@ -79,7 +79,7 @@ class HomeViewModel(
             selectedCity = selectedCity,
 
             )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState())
+    }.stateAsResultIn(viewModelScope)
 
 
     data class UiState(

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Scaffold
@@ -55,71 +56,92 @@ import com.rndeveloper.myapplication.feature.home.R
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     vm: HomeViewModel,
     onForecastClick: (String, String, String) -> Unit = { _, _, _ -> }
 ) {
-
-    val state by vm.uiState.collectAsState()
+    val uiState by vm.uiState.collectAsState()
     var isLocationPermissionDenied by remember { mutableStateOf(false) }
 
     PermissionRequestEffect(permission = Manifest.permission.ACCESS_COARSE_LOCATION) {
         if (it) {
             vm.onAction(HomeAction.OnGetCityByLocation)
         } else {
-            if (state.favCities.isEmpty()) {
-                isLocationPermissionDenied = true
-            } else {
-                vm.onAction(HomeAction.OnSelectedCity(state.favCities.first()))
+            when (uiState) {
+                is Result.Success -> {
+                    val state = (uiState as Result.Success<HomeViewModel.UiState>).data
+                    if (state.favCities.isEmpty()) {
+                        isLocationPermissionDenied = true
+                    } else {
+                        vm.onAction(HomeAction.OnSelectedCity(state.favCities.first()))
+                    }
+                }
+                is Result.Loading -> {}
+                is Result.Error -> {
+                    isLocationPermissionDenied = true
+                }
             }
         }
     }
 
     Screen {
-
-        ShowDialogIfPermissionIsDenied(
-            selectedCity = state.selectedCity,
-            favCities = state.favCities,
-            searchedCities = state.searchedCities,
-            isLocationPermissionDenied = isLocationPermissionDenied,
-            onIsLocationPermissionDenied = { isLocationPermissionDenied = false },
-            onAction = vm::onAction
-        )
-
-        if (state.isLoading && !isLocationPermissionDenied) {
-            LoadingAnimation(modifier = Modifier.fillMaxSize())
-        }
-        when (state.weatherResult) {
-            is Result.Loading -> {}
+        when (uiState) {
+            is Result.Loading -> {
+                LoadingAnimation(modifier = Modifier.fillMaxSize())
+            }
             is Result.Success -> {
-                val weather = (state.weatherResult as Result.Success<Weather>).data.current
-                HomeContent(
-                    selectedCity = state.selectedCity!!,
-                    date = weather.date,
-                    weatherDescription = weather.weatherDescription,
-                    weatherIcon = weather.weatherIcon,
-                    temperature = weather.temperature,
-                    humidity = weather.humidity,
-                    windSpeed = weather.windSpeed,
-                    precipitation = weather.precipitation,
+                val state = (uiState as Result.Success<HomeViewModel.UiState>).data
+                
+                ShowDialogIfPermissionIsDenied(
+                    selectedCity = state.selectedCity,
                     favCities = state.favCities,
                     searchedCities = state.searchedCities,
-                    onAction = vm::onAction,
-                    onForecastClick = {
-                        onForecastClick(
-                            state.selectedCity?.name ?: "",
-                            state.selectedCity?.lat.toString(),
-                            state.selectedCity?.lon.toString()
-                        )
-                    }
+                    isLocationPermissionDenied = isLocationPermissionDenied,
+                    onIsLocationPermissionDenied = { isLocationPermissionDenied = false },
+                    onAction = vm::onAction
                 )
-            }
 
+                if (state.isLoading && !isLocationPermissionDenied) {
+                    LoadingAnimation(modifier = Modifier.fillMaxSize())
+                }
+                
+                when (state.weatherResult) {
+                    is Result.Loading -> {}
+                    is Result.Success -> {
+                        val weather = state.weatherResult.data.current
+                        state.selectedCity?.let { selectedCity ->
+                            HomeContent(
+                                selectedCity = selectedCity,
+                                date = weather.date,
+                                weatherDescription = weather.weatherDescription,
+                                weatherIcon = weather.weatherIcon,
+                                temperature = weather.temperature,
+                                humidity = weather.humidity,
+                                windSpeed = weather.windSpeed,
+                                precipitation = weather.precipitation,
+                                favCities = state.favCities,
+                                searchedCities = state.searchedCities,
+                                onAction = vm::onAction,
+                                onForecastClick = {
+                                    onForecastClick(
+                                        selectedCity.name,
+                                        selectedCity.lat.toString(),
+                                        selectedCity.lon.toString()
+                                    )
+                                }
+                            )
+                        }
+                    }
+                    is Result.Error -> {
+                        ErrorText(error = (state.weatherResult as Result.Error).exception)
+                        Log.d("WeatherError", "HomeScreen: ${(state.weatherResult as Result.Error).exception}")
+                    }
+                }
+            }
             is Result.Error -> {
-                ErrorText(error = (state.weatherResult as Result.Error).exception)
-                Log.d("WeatherError", "HomeScreen: ${(state.weatherResult as Result.Error).exception}")
+                ErrorText(error = (uiState as Result.Error).exception)
+                Log.d("UIStateError", "HomeScreen: ${(uiState as Result.Error).exception}")
             }
         }
     }
