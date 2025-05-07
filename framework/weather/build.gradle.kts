@@ -2,6 +2,7 @@ plugins {
     id("rndeveloper.android.library")
     id("rndeveloper.android.room")
     id("rndeveloper.jvm.retrofit")
+    id("rndeveloper.di.library")
 }
 
 android {
