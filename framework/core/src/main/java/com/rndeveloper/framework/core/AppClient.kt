@@ -7,7 +7,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
-internal object WeatherClient {
+internal object AppClient {
 
     private val json = Json {
         ignoreUnknownKeys = true

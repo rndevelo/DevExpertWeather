@@ -16,22 +16,22 @@ internal object FrameworkWeatherModule {
     @Provides
     @Singleton
     fun provideDatabase(app: Application) =
-        Room.databaseBuilder(app, WeatherDatabase::class.java, "weather-db").build()
+        Room.databaseBuilder(app, AppDatabase::class.java, "app-db").build()
 
     @Provides
     @Singleton
-    fun provideWeatherDao(db: WeatherDatabase) = db.weatherDao()
+    fun provideWeatherDao(db: AppDatabase) = db.weatherDao()
 
     @Provides
     @Singleton
-    fun provideCityDao(db: WeatherDatabase) = db.cityDao()
+    fun provideCityDao(db: AppDatabase) = db.cityDao()
 
     @Provides
     @Singleton
-    fun provideWeatherService() = WeatherClient.weatherService
+    fun provideWeatherService() = AppClient.weatherService
 
     @Provides
     @Singleton
-    fun provideCityService() = WeatherClient.cityService
+    fun provideCityService() = AppClient.cityService
 }
 
