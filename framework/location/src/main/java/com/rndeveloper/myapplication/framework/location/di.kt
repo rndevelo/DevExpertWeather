@@ -1,11 +1,14 @@
 package com.rndeveloper.myapplication.framework.location
 
 import android.app.Application
-import android.content.Context
 import android.location.Geocoder
 import com.google.android.gms.location.LocationServices
-import com.rndeveloper.myapplication.data.location.LocationDataSource
-import com.rndeveloper.myapplication.data.location.RegionDataSource
+import com.rndeveloper.myapplication.data.location.datasources.CityLocalDataSource
+import com.rndeveloper.myapplication.data.location.datasources.CityRemoteDataSource
+import com.rndeveloper.myapplication.data.location.datasources.LocationDataSource
+import com.rndeveloper.myapplication.data.location.datasources.RegionDataSource
+import com.rndeveloper.myapplication.framework.location.local.CityRoomDataSource
+import com.rndeveloper.myapplication.framework.location.remote.WeatherServerDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -22,6 +25,12 @@ internal abstract class FrameworkLocationBindsModule {
 
     @Binds
     abstract fun bindRegionDataSource(impl: GeocoderRegionDataSource): RegionDataSource
+
+    @Binds
+    abstract fun bindCityLocalDataSource(impl: CityRoomDataSource): CityLocalDataSource
+
+    @Binds
+    abstract fun bindCityRemoteDataSource(impl: WeatherServerDataSource): CityRemoteDataSource
 
 }
 

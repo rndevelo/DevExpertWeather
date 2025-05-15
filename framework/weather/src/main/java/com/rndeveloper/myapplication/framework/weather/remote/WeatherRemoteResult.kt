@@ -2,7 +2,6 @@ package com.rndeveloper.myapplication.framework.weather.remote
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.rndeveloper.myapplication.domain.common.City
 import com.rndeveloper.myapplication.domain.weather.model.Current
 import com.rndeveloper.myapplication.domain.weather.model.DailyForecast
 import kotlinx.serialization.SerialName
@@ -115,25 +114,4 @@ fun String.formatUiDate(): String {
     val date = LocalDate.parse(this.formatDataDate())
     val formatter = DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM 'de' yyyy", Locale("es", "ES"))
     return date.format(formatter).replaceFirstChar { it.uppercaseChar() }
-}
-
-
-@Serializable
-data class GeoCodingResponse(val results: List<RemoteCity>)
-
-@Serializable
-data class RemoteCity(
-    val name: String,
-    val country: String,
-    val latitude: Double,
-    val longitude: Double
-){
-    fun toCity(): City {
-        return City(
-            name = name,
-            country = country,
-            lat = latitude,
-            lon = longitude
-        )
-    }
 }

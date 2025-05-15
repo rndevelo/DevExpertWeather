@@ -8,7 +8,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain:common"))
     implementation(project(":domain:location"))
     implementation(project(":domain:weather"))
 }

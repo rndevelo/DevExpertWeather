@@ -1,4 +1,4 @@
-package com.rndeveloper.myapplication.framework.weather.local
+package com.rndeveloper.myapplication.framework.location.local
 
 import androidx.room.Entity
 

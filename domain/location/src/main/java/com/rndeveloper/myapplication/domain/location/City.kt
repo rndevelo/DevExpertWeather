@@ -1,4 +1,4 @@
-package com.rndeveloper.myapplication.domain.common
+package com.rndeveloper.myapplication.domain.location
 
 data class City(
     val name: String,

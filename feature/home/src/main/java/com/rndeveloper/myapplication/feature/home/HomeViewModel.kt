@@ -2,13 +2,13 @@ package com.rndeveloper.myapplication.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rndeveloper.myapplication.domain.common.City
-import com.rndeveloper.myapplication.domain.location.GetLocationCityUseCase
+import com.rndeveloper.myapplication.domain.location.City
+import com.rndeveloper.myapplication.domain.location.usecases.GetLocationCityUseCase
 import com.rndeveloper.myapplication.domain.weather.model.Weather
-import com.rndeveloper.myapplication.domain.weather.usecases.GetFavCitiesUseCase
+import com.rndeveloper.myapplication.domain.location.usecases.GetFavCitiesUseCase
 import com.rndeveloper.myapplication.domain.weather.usecases.GetWeatherUseCase
-import com.rndeveloper.myapplication.domain.weather.usecases.SearchCitiesUseCase
-import com.rndeveloper.myapplication.domain.weather.usecases.ToggleCityUseCase
+import com.rndeveloper.myapplication.domain.location.usecases.SearchCitiesUseCase
+import com.rndeveloper.myapplication.domain.location.usecases.ToggleCityUseCase
 import com.rndeveloper.myapplication.feature.common.Result
 import com.rndeveloper.myapplication.feature.common.stateAsResultIn
 import dagger.hilt.android.lifecycle.HiltViewModel

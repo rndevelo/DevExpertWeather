@@ -1,10 +1,11 @@
-package com.rndeveloper.myapplication.framework.weather.remote
+package com.rndeveloper.framework.core
 
+import com.rndeveloper.myapplication.framework.location.remote.CityService
+import com.rndeveloper.myapplication.framework.weather.remote.WeatherService
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
-import retrofit2.create
 
 internal object WeatherClient {
 
@@ -12,9 +13,11 @@ internal object WeatherClient {
         ignoreUnknownKeys = true
     }
 
-    val instance = Retrofit.Builder()
+    val instance: Retrofit = Retrofit.Builder()
         .baseUrl("https://api.open-meteo.com/v1/")
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
-        .create<WeatherService>()
+
+    val weatherService: WeatherService = instance.create(WeatherService::class.java)
+    val cityService: CityService = instance.create(CityService::class.java)
 }

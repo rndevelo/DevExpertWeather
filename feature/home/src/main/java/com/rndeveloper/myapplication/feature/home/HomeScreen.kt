@@ -39,7 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rndeveloper.myapplication.domain.common.City
+import com.rndeveloper.myapplication.domain.location.City
 import com.rndeveloper.myapplication.domain.weather.model.Weather
 import com.rndeveloper.myapplication.feature.common.ErrorText
 import com.rndeveloper.myapplication.feature.common.LoadingAnimation

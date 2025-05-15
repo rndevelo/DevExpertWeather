@@ -39,11 +39,11 @@ android {
 
 dependencies {
 
-    implementation(project(":domain:common"))
     implementation(project(":domain:location"))
     implementation(project(":domain:weather"))
     implementation(project(":data:location"))
     implementation(project(":data:weather"))
+    implementation(project(":framework:core"))
     implementation(project(":framework:location"))
     implementation(project(":framework:weather"))
     implementation(project(":feature:common"))
