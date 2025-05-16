@@ -27,7 +27,6 @@ private fun Weather.toDbModel(): DbWeather {
     )
 }
 
-
 fun DbWeather.toWeather(): Weather {
     return Weather(
         current = current,

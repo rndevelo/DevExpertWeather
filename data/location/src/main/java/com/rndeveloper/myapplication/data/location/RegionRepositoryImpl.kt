@@ -7,6 +7,6 @@ import jakarta.inject.Inject
 
 class RegionRepositoryImpl @Inject constructor(private val regionDataSource: RegionDataSource) :
     RegionRepository {
-    override suspend fun findLastLocationCityInfo(): City? =
+    override suspend fun cityByLastLocation(): City? =
         regionDataSource.findLastLocationCityInfo()
 }

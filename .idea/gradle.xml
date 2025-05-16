@@ -36,6 +36,7 @@
             <option value="$PROJECT_DIR$/feature/forecast" />
             <option value="$PROJECT_DIR$/feature/home" />
             <option value="$PROJECT_DIR$/framework" />
+            <option value="$PROJECT_DIR$/framework/core" />
             <option value="$PROJECT_DIR$/framework/location" />
             <option value="$PROJECT_DIR$/framework/weather" />
           </set>
