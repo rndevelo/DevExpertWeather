@@ -66,13 +66,11 @@ fun HomeScreen(
     var isLocationPermissionDenied by remember { mutableStateOf(false) }
 
     PermissionRequestEffect(permission = Manifest.permission.ACCESS_COARSE_LOCATION) {
-        if (it) {
-            vm.onAction(HomeAction.OnGetCityByLocation)
-        } else {
-            if (state.favCities.isEmpty()) {
-                isLocationPermissionDenied = true
+        if (state.selectedCity == null) {
+            if (it) {
+                vm.onAction(HomeAction.OnGetCityByLocation)
             } else {
-                vm.onAction(HomeAction.OnSelectedCity(state.favCities.first()))
+                isLocationPermissionDenied = true
             }
         }
     }
@@ -95,31 +93,36 @@ fun HomeScreen(
             is Result.Loading -> {}
             is Result.Success -> {
                 val weather = (state.weatherResult as Result.Success<Weather>).data.current
-                HomeContent(
-                    selectedCity = state.selectedCity!!,
-                    date = weather.date,
-                    weatherDescription = weather.weatherDescription,
-                    weatherIcon = weather.weatherIcon,
-                    temperature = weather.temperature,
-                    humidity = weather.humidity,
-                    windSpeed = weather.windSpeed,
-                    precipitation = weather.precipitation,
-                    favCities = state.favCities,
-                    searchedCities = state.searchedCities,
-                    onAction = vm::onAction,
-                    onForecastClick = {
-                        onForecastClick(
-                            state.selectedCity?.name ?: "",
-                            state.selectedCity?.lat.toString(),
-                            state.selectedCity?.lon.toString()
-                        )
-                    }
-                )
+                if (state.selectedCity != null) {
+                    HomeContent(
+                        selectedCity = state.selectedCity!!,
+                        date = weather.date,
+                        weatherDescription = weather.weatherDescription,
+                        weatherIcon = weather.weatherIcon,
+                        temperature = weather.temperature,
+                        humidity = weather.humidity,
+                        windSpeed = weather.windSpeed,
+                        precipitation = weather.precipitation,
+                        favCities = state.favCities,
+                        searchedCities = state.searchedCities,
+                        onAction = vm::onAction,
+                        onForecastClick = {
+                            onForecastClick(
+                                state.selectedCity?.name ?: "",
+                                state.selectedCity?.lat.toString(),
+                                state.selectedCity?.lon.toString()
+                            )
+                        }
+                    )
+                }
             }
 
             is Result.Error -> {
                 ErrorText(error = (state.weatherResult as Result.Error).exception)
-                Log.d("WeatherError", "HomeScreen: ${(state.weatherResult as Result.Error).exception}")
+                Log.d(
+                    "WeatherError",
+                    "HomeScreen: ${(state.weatherResult as Result.Error).exception}"
+                )
             }
         }
     }

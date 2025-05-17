@@ -3,12 +3,14 @@ package com.rndeveloper.myapplication.feature.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rndeveloper.myapplication.domain.location.City
-import com.rndeveloper.myapplication.domain.location.usecases.GetLocationCityUseCase
-import com.rndeveloper.myapplication.domain.weather.model.Weather
 import com.rndeveloper.myapplication.domain.location.usecases.GetFavCitiesUseCase
-import com.rndeveloper.myapplication.domain.weather.usecases.GetWeatherUseCase
+import com.rndeveloper.myapplication.domain.location.usecases.GetFromLocationCityUseCase
+import com.rndeveloper.myapplication.domain.location.usecases.GetSelectedCityUseCase
 import com.rndeveloper.myapplication.domain.location.usecases.SearchCitiesUseCase
+import com.rndeveloper.myapplication.domain.location.usecases.SetSelectedCityUseCase
 import com.rndeveloper.myapplication.domain.location.usecases.ToggleCityUseCase
+import com.rndeveloper.myapplication.domain.weather.model.Weather
+import com.rndeveloper.myapplication.domain.weather.usecases.GetWeatherUseCase
 import com.rndeveloper.myapplication.feature.common.Result
 import com.rndeveloper.myapplication.feature.common.stateAsResultIn
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,8 +20,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,22 +30,20 @@ import javax.inject.Inject
 sealed interface HomeAction {
     data class OnSearchCities(val query: String) : HomeAction
     data object OnGetCityByLocation : HomeAction
-    data class OnSelectedCity(val city: City?) : HomeAction
+    data class OnSelectedCity(val city: City) : HomeAction
     data class OnToggleCity(val city: City, val isFav: Boolean) : HomeAction
 }
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getWeatherUseCase: GetWeatherUseCase,
+    getSelectedCityUseCase: GetSelectedCityUseCase,
+    private val setSelectedCityUseCase: SetSelectedCityUseCase,
     getFavCitiesUseCase: GetFavCitiesUseCase,
     private val searchCitiesUseCase: SearchCitiesUseCase,
     private val toggleCityUseCase: ToggleCityUseCase,
-    private val getLocalCityUseCase: GetLocationCityUseCase
+    private val getFromLocationCityUseCase: GetFromLocationCityUseCase
 ) : ViewModel() {
-
-    // 🔁 Esto es controlable manualmente o por lógica de inicio
-    private val _selectedCityState = MutableStateFlow<City?>(null)
-    val selectedCityState: StateFlow<City?> = _selectedCityState.asStateFlow()
 
     // 🔍 Ciudades buscadas (ahora accesible desde la UI)
     private val _searchedCitiesState = MutableStateFlow<List<City>>(emptyList())
@@ -52,10 +53,16 @@ class HomeViewModel @Inject constructor(
     val favCitiesState: StateFlow<Result<List<City>>> =
         getFavCitiesUseCase().stateAsResultIn(viewModelScope)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val selectedCityState: StateFlow<Result<City?>> =
+        getSelectedCityUseCase().stateAsResultIn(viewModelScope)
+
+
     // 🌦 Estado del clima según la ciudad seleccionada
     @OptIn(ExperimentalCoroutinesApi::class)
     val weatherState: StateFlow<Result<Weather>> = selectedCityState
-        .filterNotNull()
+        .filterIsInstance<Result.Success<City>>() // solo sigue si hay City exitosamente cargada
+        .map { it.data }
         .flatMapLatest { city ->
             getWeatherUseCase(city.lat, city.lon)
         }
@@ -67,7 +74,7 @@ class HomeViewModel @Inject constructor(
         searchedCitiesState,
         favCitiesState,
         selectedCityState
-    ) { weatherResult, searchedCities, favCitiesResult, selectedCity ->
+    ) { weatherResult, searchedCities, favCitiesResult, selectedCityResult ->
 
         val isLoading = weatherResult is Result.Loading || favCitiesResult is Result.Loading
 
@@ -79,9 +86,11 @@ class HomeViewModel @Inject constructor(
                 is Result.Success -> favCitiesResult.data
                 else -> emptyList()
             },
-            selectedCity = selectedCity,
-
-            )
+            selectedCity = when (selectedCityResult) {
+                is Result.Success -> selectedCityResult.data
+                else -> null
+            },
+        )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState())
 
 
@@ -96,10 +105,13 @@ class HomeViewModel @Inject constructor(
     fun onAction(action: HomeAction) {
         when (action) {
             is HomeAction.OnGetCityByLocation -> viewModelScope.launch {
-                getLocalCityUseCase()?.let { city ->
-                    _selectedCityState.value =
-                        searchCitiesUseCase(query = "${city.name}, ${city.country}")
-                            .firstOrNull()
+                getFromLocationCityUseCase()?.let { city ->
+
+                    val searchedCities =
+                        searchCitiesUseCase(query = "${city.name}, ${city.country}").first()
+
+                    setSelectedCityUseCase(searchedCities)
+
                 }
             }
 
@@ -107,7 +119,9 @@ class HomeViewModel @Inject constructor(
                 _searchedCitiesState.value = searchCitiesUseCase(action.query)
             }
 
-            is HomeAction.OnSelectedCity -> _selectedCityState.value = action.city
+            is HomeAction.OnSelectedCity -> viewModelScope.launch {
+                setSelectedCityUseCase(action.city)
+            }
             is HomeAction.OnToggleCity -> viewModelScope.launch {
                 toggleCityUseCase(action.city, action.isFav)
             }

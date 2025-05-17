@@ -5,16 +5,32 @@ import com.rndeveloper.myapplication.domain.location.City
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.map
 
-internal class CityRoomDataSource @Inject constructor(private val cityDao: CityDao) :
+internal class CityRoomDataSource @Inject constructor(
+    private val favCityDao: FavCityDao,
+    private val selectedCityDao: SelectedCityDao
+) :
     CityLocalDataSource {
 
-    override val favCities = cityDao.getFavCities().map { cities -> cities.map { it.toCity() } }
-    override suspend fun insertFavCity(city: City) = cityDao.insertFavCity(city.toDbModel())
-    override suspend fun deleteFavCity(city: City) = cityDao.deleteFavCity(city.toDbModel())
+    override val selectedCity = selectedCityDao.getSelectedCity().map { dbCity -> dbCity?.toCity() }
+    override suspend fun insertSelectedCity(city: City) =
+        selectedCityDao.insertSelectedCity(city.toDbSelectedCity())
+
+    override val favCities = favCityDao.getFavCities().map { dbCities -> dbCities.map { it.toCity() } }
+    override suspend fun insertFavCity(city: City) = favCityDao.insertFavCity(city.toDbFavCity())
+    override suspend fun deleteFavCity(city: City) = favCityDao.deleteFavCity(city.toDbFavCity())
 }
 
-private fun City.toDbModel(): DbCity {
-    return DbCity(
+private fun City.toDbFavCity(): DbFavCity {
+    return DbFavCity(
+        name = name,
+        country = country,
+        lat = lat,
+        lon = lon,
+    )
+}
+
+fun DbFavCity.toCity(): City {
+    return City(
         name = name,
         country = country,
         lat = lat,
@@ -22,7 +38,16 @@ private fun City.toDbModel(): DbCity {
     )
 }
 
-fun DbCity.toCity(): City {
+private fun City.toDbSelectedCity(): DbSelectedCity {
+    return DbSelectedCity(
+        name = name,
+        country = country,
+        lat = lat,
+        lon = lon,
+    )
+}
+
+fun DbSelectedCity.toCity(): City {
     return City(
         name = name,
         country = country,

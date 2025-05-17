@@ -24,7 +24,11 @@ internal object FrameworkWeatherModule {
 
     @Provides
     @Singleton
-    fun provideCityDao(db: AppDatabase) = db.cityDao()
+    fun provideFavCitiesDao(db: AppDatabase) = db.favCitiesDao()
+
+    @Provides
+    @Singleton
+    fun provideSelectedCityDao(db: AppDatabase) = db.selectedCityDao()
 
     @Provides
     @Singleton

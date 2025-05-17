@@ -14,7 +14,7 @@ class GetLocationCityUseCaseTest {
     fun `Invoke calls repository`(): Unit = runBlocking {
         val locationCity = sampleCity()
 
-        val useCase = GetLocationCityUseCase(
+        val useCase = GetFromLocationCityUseCase(
             mock {
                 on {
                     runBlocking { cityByLastLocation() }
