@@ -1,5 +1,6 @@
 package com.rndeveloper.myapplication.feature.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rndeveloper.myapplication.domain.location.City
@@ -29,7 +30,7 @@ import javax.inject.Inject
 
 sealed interface HomeAction {
     data class OnSearchCities(val query: String) : HomeAction
-    data object OnGetCityByLocation : HomeAction
+    data object OnGetCityFromLocation : HomeAction
     data class OnSelectedCity(val city: City) : HomeAction
     data class OnToggleCity(val city: City, val isFav: Boolean) : HomeAction
 }
@@ -54,9 +55,8 @@ class HomeViewModel @Inject constructor(
         getFavCitiesUseCase().stateAsResultIn(viewModelScope)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val selectedCityState: StateFlow<Result<City?>> =
+    val selectedCityState: StateFlow<Result<City>> =
         getSelectedCityUseCase().stateAsResultIn(viewModelScope)
-
 
     // 🌦 Estado del clima según la ciudad seleccionada
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -86,10 +86,7 @@ class HomeViewModel @Inject constructor(
                 is Result.Success -> favCitiesResult.data
                 else -> emptyList()
             },
-            selectedCity = when (selectedCityResult) {
-                is Result.Success -> selectedCityResult.data
-                else -> null
-            },
+            selectedCity = selectedCityResult,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState())
 
@@ -99,19 +96,22 @@ class HomeViewModel @Inject constructor(
         val weatherResult: Result<Weather> = Result.Loading,
         val favCities: List<City> = emptyList(),
         val searchedCities: List<City> = emptyList(),
-        val selectedCity: City? = null,
+        val selectedCity: Result<City> = Result.Loading,
     )
 
     fun onAction(action: HomeAction) {
         when (action) {
-            is HomeAction.OnGetCityByLocation -> viewModelScope.launch {
+            is HomeAction.OnGetCityFromLocation -> viewModelScope.launch {
                 getFromLocationCityUseCase()?.let { city ->
+                    val results = searchCitiesUseCase("${city.name}, ${city.country}")
+                    val searchedCity = results.firstOrNull()
+                    if (searchedCity != null) {
+                        setSelectedCityUseCase(searchedCity)
+                        Log.d("HomeViewModel", "searchedCity = $searchedCity")
 
-                    val searchedCities =
-                        searchCitiesUseCase(query = "${city.name}, ${city.country}").first()
-
-                    setSelectedCityUseCase(searchedCities)
-
+                    } else {
+                        Log.e("HomeViewModel", "No se encontró la ciudad desde la búsqueda")
+                    }
                 }
             }
 
@@ -122,6 +122,7 @@ class HomeViewModel @Inject constructor(
             is HomeAction.OnSelectedCity -> viewModelScope.launch {
                 setSelectedCityUseCase(action.city)
             }
+
             is HomeAction.OnToggleCity -> viewModelScope.launch {
                 toggleCityUseCase(action.city, action.isFav)
             }

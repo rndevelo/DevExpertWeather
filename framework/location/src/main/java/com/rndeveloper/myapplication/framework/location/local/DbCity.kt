@@ -27,4 +27,5 @@ data class DbSelectedCity(
     val country: String,
     val lat: Double,
     val lon: Double,
+    val lastUpdated: Long = System.currentTimeMillis() // 👈 nueva columna
 )

@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetSelectedCityUseCase @Inject constructor(private val cityRepository: CityRepository) {
-    operator fun invoke(): Flow<City?> = cityRepository.selectedCity
+    operator fun invoke(): Flow<City> = cityRepository.selectedCity
 }

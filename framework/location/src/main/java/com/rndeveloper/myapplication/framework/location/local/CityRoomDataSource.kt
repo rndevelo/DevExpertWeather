@@ -8,10 +8,9 @@ import kotlinx.coroutines.flow.map
 internal class CityRoomDataSource @Inject constructor(
     private val favCityDao: FavCityDao,
     private val selectedCityDao: SelectedCityDao
-) :
-    CityLocalDataSource {
+) : CityLocalDataSource {
 
-    override val selectedCity = selectedCityDao.getSelectedCity().map { dbCity -> dbCity?.toCity() }
+    override val selectedCity = selectedCityDao.getSelectedCity().map { dbCity -> dbCity.toCity() }
     override suspend fun insertSelectedCity(city: City) =
         selectedCityDao.insertSelectedCity(city.toDbSelectedCity())
 
