@@ -3,8 +3,8 @@ package com.rndeveloper.myapplication.framework.location
 import android.annotation.SuppressLint
 import android.location.Location
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.rndeveloper.myapplication.data.location.LocationDataSource
-import com.rndeveloper.myapplication.domain.common.City
+import com.rndeveloper.myapplication.data.location.datasources.LocationDataSource
+import com.rndeveloper.myapplication.domain.location.City
 import jakarta.inject.Inject
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume

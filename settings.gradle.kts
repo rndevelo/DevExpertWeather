@@ -26,11 +26,11 @@ include(":app")
 
 include(":domain:weather")
 include(":domain:location")
-include(":domain:common")
 
 include(":data:location")
 include(":data:weather")
 
+include(":framework:core")
 include(":framework:location")
 include(":framework:weather")
 

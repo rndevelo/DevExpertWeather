@@ -8,7 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.rndeveloper.myapplication.domain.common.City
+import com.rndeveloper.myapplication.domain.location.City
 import com.rndeveloper.myapplication.feature.home.R
 import com.rndeveloper.myapplication.feature.home.HomeAction
 

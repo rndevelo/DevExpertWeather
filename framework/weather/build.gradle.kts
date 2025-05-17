@@ -10,7 +10,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain:common"))
     implementation(project(":domain:weather"))
     implementation(project(":data:weather"))
     implementation(libs.gson)

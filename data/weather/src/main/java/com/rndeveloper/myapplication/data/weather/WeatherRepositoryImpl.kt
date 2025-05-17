@@ -1,6 +1,5 @@
 package com.rndeveloper.myapplication.data.weather
 
-import com.rndeveloper.myapplication.domain.common.City
 import com.rndeveloper.myapplication.domain.weather.WeatherRepository
 import com.rndeveloper.myapplication.domain.weather.model.Weather
 import jakarta.inject.Inject
@@ -31,18 +30,6 @@ class WeatherRepositoryImpl @Inject constructor(
         val currentTime = System.currentTimeMillis()
         val tenMinutesInMillis = 10 * 60 * 1000 // 10 minutos en milisegundos
         return (currentTime - lastUpdated) > tenMinutesInMillis
-    }
-
-    override val favCities: Flow<List<City>> = flow { emitAll(weatherLocalDataSource.favCities) }
-
-    override suspend fun searchCities(query: String) = weatherRemoteDataSource.searchCities(query)
-
-    override suspend fun toggleFavCity(city: City, isFav: Boolean) {
-        if (isFav) {
-            weatherLocalDataSource.deleteFavCity(city)
-        } else {
-            weatherLocalDataSource.insertFavCity(city)
-        }
     }
 }
 
