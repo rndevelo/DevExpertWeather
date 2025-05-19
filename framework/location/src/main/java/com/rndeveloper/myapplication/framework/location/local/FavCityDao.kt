@@ -8,18 +8,6 @@ import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface SelectedCityDao {
-    @Query("SELECT * FROM selected_city")
-    fun getSelectedCity(): Flow<DbSelectedCity>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSelectedCity(city: DbSelectedCity)
-
-    @Query("DELETE FROM selected_city WHERE id = 0")
-    suspend fun clearSelectedCity()
-}
-
-@Dao
 interface FavCityDao {
     @Query("SELECT * FROM fav_cities")
     fun getFavCities(): Flow<List<DbFavCity>>

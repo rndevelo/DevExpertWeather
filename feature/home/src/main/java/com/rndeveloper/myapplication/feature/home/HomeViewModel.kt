@@ -1,6 +1,5 @@
 package com.rndeveloper.myapplication.feature.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rndeveloper.myapplication.domain.location.City
@@ -16,14 +15,14 @@ import com.rndeveloper.myapplication.feature.common.Result
 import com.rndeveloper.myapplication.feature.common.stateAsResultIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -55,15 +54,17 @@ class HomeViewModel @Inject constructor(
         getFavCitiesUseCase().stateAsResultIn(viewModelScope)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val selectedCityState: StateFlow<Result<City>> =
+    val selectedCityState: StateFlow<Result<City?>> =
         getSelectedCityUseCase().stateAsResultIn(viewModelScope)
 
     // 🌦 Estado del clima según la ciudad seleccionada
     @OptIn(ExperimentalCoroutinesApi::class)
     val weatherState: StateFlow<Result<Weather>> = selectedCityState
-        .filterIsInstance<Result.Success<City>>() // solo sigue si hay City exitosamente cargada
-        .map { it.data }
-        .flatMapLatest { city ->
+        .mapNotNull { result -> // Usar mapNotNull para manejar errores y obtener solo Success con datos no nulos
+            (result as? Result.Success<City?>)?.data // Extrae City si es Success y no nulo
+        }
+        .flatMapLatest { city -> // city aquí ya no será null
+            delay(2000)
             getWeatherUseCase(city.lat, city.lon)
         }
         .stateAsResultIn(viewModelScope)
@@ -76,42 +77,34 @@ class HomeViewModel @Inject constructor(
         selectedCityState
     ) { weatherResult, searchedCities, favCitiesResult, selectedCityResult ->
 
-        val isLoading = weatherResult is Result.Loading || favCitiesResult is Result.Loading
-
         UiState(
-            isLoading = isLoading,
+            selectedCity = selectedCityResult,
             weatherResult = weatherResult,
             searchedCities = searchedCities,
             favCities = when (favCitiesResult) {
                 is Result.Success -> favCitiesResult.data
                 else -> emptyList()
             },
-            selectedCity = selectedCityResult,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState())
 
 
     data class UiState(
-        val isLoading: Boolean = false,
+        val selectedCity: Result<City?> = Result.Loading,
         val weatherResult: Result<Weather> = Result.Loading,
-        val favCities: List<City> = emptyList(),
         val searchedCities: List<City> = emptyList(),
-        val selectedCity: Result<City> = Result.Loading,
+        val favCities: List<City> = emptyList(),
     )
 
     fun onAction(action: HomeAction) {
         when (action) {
             is HomeAction.OnGetCityFromLocation -> viewModelScope.launch {
                 getFromLocationCityUseCase()?.let { city ->
-                    val results = searchCitiesUseCase("${city.name}, ${city.country}")
-                    val searchedCity = results.firstOrNull()
-                    if (searchedCity != null) {
-                        setSelectedCityUseCase(searchedCity)
-                        Log.d("HomeViewModel", "searchedCity = $searchedCity")
+                    delay(2000)
 
-                    } else {
-                        Log.e("HomeViewModel", "No se encontró la ciudad desde la búsqueda")
-                    }
+                    val results = searchCitiesUseCase("${city.name}, ${city.country}")
+                    val searchedCity = results.first()
+                    setSelectedCityUseCase(searchedCity)
                 }
             }
 

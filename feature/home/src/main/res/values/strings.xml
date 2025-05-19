@@ -10,4 +10,6 @@
     <string name="home_text_enter_a_city">Enter a city</string>
     <string name="home_text_accept">Accept</string>
     <string name="forecast_text_7_day_forecast">7-day forecast</string>
+    <string name="app_text_processing_selected_location">Processing selected location…</string>
+    <string name="home_text_obtaining_weather_data">Obtaining weather data…</string>
 </resources>

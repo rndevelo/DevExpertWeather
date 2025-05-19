@@ -10,7 +10,7 @@ internal class CityRoomDataSource @Inject constructor(
     private val selectedCityDao: SelectedCityDao
 ) : CityLocalDataSource {
 
-    override val selectedCity = selectedCityDao.getSelectedCity().map { dbCity -> dbCity.toCity() }
+    override val selectedCity = selectedCityDao.getSelectedCity().map { dbCity -> dbCity?.toCity() }
     override suspend fun insertSelectedCity(city: City) =
         selectedCityDao.insertSelectedCity(city.toDbSelectedCity())
 

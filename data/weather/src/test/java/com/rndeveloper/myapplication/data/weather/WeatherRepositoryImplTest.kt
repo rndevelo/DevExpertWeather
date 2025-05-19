@@ -31,14 +31,17 @@ class WeatherRepositoryImplTest {
         )
     }
 
+//    City(name = "Buenos Aires", country = "Argentina", lat = -34.6037, lon = -58.3816)
+
+
     @Test
     fun `Current and forecast weather are taken from local data source if available`(): Unit =
         runBlocking {
-            val localWeather = sampleWeather(0.0, 0.0)
+            val localWeather = sampleWeather(-34.6037, -58.3816)
 
-            whenever(weatherLocalDataSource.weather(lat = 0.0, lon = 0.0)).thenReturn(flowOf(localWeather))
+            whenever(weatherLocalDataSource.weather(lat = -34.6037, lon = -58.3816)).thenReturn(flowOf(localWeather))
 
-            val result = repository.weather(lat = 0.0, lon = 0.0)
+            val result = repository.weather(lat = -34.6037, lon = -58.3816)
 
             assertEquals(localWeather, result.first())
         }
@@ -46,12 +49,12 @@ class WeatherRepositoryImplTest {
     @Test
     fun `Weather are saved to local data source when it's empty`(): Unit = runBlocking {
         val localWeather = null
-        val remoteWeather = sampleWeather(0.0, 0.0)
+        val remoteWeather = sampleWeather(-34.6037, -58.3816)
 
-        whenever(weatherLocalDataSource.weather(lat = 0.0, lon = 0.0)).thenReturn(flowOf(localWeather))
-        whenever(weatherRemoteDataSource.getWeather(lat = 0.0, lon = 0.0)).thenReturn(remoteWeather)
+        whenever(weatherLocalDataSource.weather(lat = -34.6037, lon = -58.3816)).thenReturn(flowOf(localWeather))
+        whenever(weatherRemoteDataSource.getWeather(lat = -34.6037, lon = -58.3816)).thenReturn(remoteWeather)
 
-        repository.weather(lat = 0.0, lon = 0.0).first()
+        repository.weather(lat = -34.6037, lon = -58.3816).first()
 
         verify(weatherLocalDataSource).insertWeather(remoteWeather)
     }

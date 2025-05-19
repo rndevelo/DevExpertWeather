@@ -2,4 +2,5 @@
     <string name="forecast_text_7_day_forecast">7-day forecast</string>
     <string name="forecast_text_max_c">🌡️ Max: %1$s°C</string>
     <string name="forecast_text_min_c">🌡️ Min: %1$s°C</string>
+    <string name="forecast_text_obtaining_forecast_data">Obtaining forecast data…</string>
 </resources>

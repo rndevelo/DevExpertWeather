@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.map
 internal class WeatherRoomDataSource @Inject constructor(private val weatherDao: WeatherDao) :
     WeatherLocalDataSource {
 
-    // Métodos para interactuar con la base de datos local usando el DAO
     override fun weather(lat: Double, lon: Double): Flow<Weather?> =
         weatherDao.getWeather(lat, lon).map { db -> db?.toWeather() }
 

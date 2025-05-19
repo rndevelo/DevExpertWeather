@@ -2,7 +2,6 @@ package com.rndeveloper.myapplication.feature.home
 
 import android.Manifest
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -69,58 +68,70 @@ fun HomeScreen(
 
         when (val selectedCityResult = state.selectedCity) {
             is Result.Success -> {
-
                 val selectedCity = selectedCityResult.data
 
-                ShowDialogIfPermissionIsDenied(
-                    selectedCity = selectedCity,
-                    favCities = state.favCities,
-                    searchedCities = state.searchedCities,
-                    isLocationPermissionDenied = isLocationPermissionDenied,
-                    onIsLocationPermissionDenied = { isLocationPermissionDenied = false },
-                    onAction = vm::onAction
-                )
+                if (selectedCity != null) {
 
-                if (state.isLoading && !isLocationPermissionDenied) {
-                    LoadingAnimation(modifier = Modifier.fillMaxSize())
-                }
-                when (state.weatherResult) {
-                    is Result.Loading -> {}
-                    is Result.Success -> {
-                        val weather = (state.weatherResult as Result.Success<Weather>).data.current
-                        HomeContent(
-                            selectedCity = selectedCity,
-                            date = weather.date,
-                            weatherDescription = weather.weatherDescription,
-                            weatherIcon = weather.weatherIcon,
-                            temperature = weather.temperature,
-                            humidity = weather.humidity,
-                            windSpeed = weather.windSpeed,
-                            precipitation = weather.precipitation,
-                            favCities = state.favCities,
-                            searchedCities = state.searchedCities,
-                            onAction = vm::onAction,
-                            onForecastClick = {
-                                onForecastClick(
-                                    selectedCity.name,
-                                    selectedCity.lat.toString(),
-                                    selectedCity.lon.toString()
-                                )
-                            }
-                        )
-                    }
+                    when (state.weatherResult) {
+                        is Result.Loading -> {
+                            LoadingAnimation(
+                                stringResource(R.string.home_text_obtaining_weather_data),
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
 
-                    is Result.Error -> {
-                        ErrorText(error = (state.weatherResult as Result.Error).exception)
-                        Log.d(
-                            "WeatherError",
-                            "HomeScreen: ${(state.weatherResult as Result.Error).exception}"
-                        )
+                        is Result.Success -> {
+                            val weather =
+                                (state.weatherResult as Result.Success<Weather>).data.current
+                            HomeContent(
+                                selectedCity = selectedCity,
+                                date = weather.date,
+                                weatherDescription = weather.weatherDescription,
+                                weatherIcon = weather.weatherIcon,
+                                temperature = weather.temperature,
+                                humidity = weather.humidity,
+                                windSpeed = weather.windSpeed,
+                                precipitation = weather.precipitation,
+                                favCities = state.favCities,
+                                searchedCities = state.searchedCities,
+                                onAction = vm::onAction,
+                                onForecastClick = {
+                                    onForecastClick(
+                                        selectedCity.name,
+                                        selectedCity.lat.toString(),
+                                        selectedCity.lon.toString()
+                                    )
+                                }
+                            )
+                        }
+
+                        is Result.Error -> ErrorText(error = (state.weatherResult as Result.Error).exception)
                     }
+                } else {
+                    LoadingAnimation(
+                        stringResource(R.string.app_text_processing_selected_location),
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    PermissionRequestEffect(permission = Manifest.permission.ACCESS_COARSE_LOCATION) {
+                        if (it) {
+                            vm.onAction(HomeAction.OnGetCityFromLocation)
+                        } else {
+                            isLocationPermissionDenied = true
+                        }
+                    }
+                    ShowDialogIfPermissionIsDenied(
+                        selectedCity = selectedCity,
+                        favCities = state.favCities,
+                        searchedCities = state.searchedCities,
+                        isLocationPermissionDenied = isLocationPermissionDenied,
+                        onIsLocationPermissionDenied = { isLocationPermissionDenied = false },
+                        onAction = vm::onAction
+                    )
                 }
             }
 
             is Result.Error -> {
+
                 PermissionRequestEffect(permission = Manifest.permission.ACCESS_COARSE_LOCATION) {
                     if (it) {
                         vm.onAction(HomeAction.OnGetCityFromLocation)
@@ -130,12 +141,13 @@ fun HomeScreen(
                 }
             }
 
-            else -> {
-
+            is Result.Loading -> {
+                LoadingAnimation(
+                    stringResource(R.string.app_text_processing_selected_location),
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
-
-
     }
 }
 

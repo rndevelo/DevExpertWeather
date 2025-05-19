@@ -14,9 +14,10 @@ class CityRepositoryImpl @Inject constructor(
     private val cityRemoteDataSource: CityRemoteDataSource,
 ) : CityRepository {
 
-    override val selectedCity: Flow<City> = flow { emitAll(cityLocalDataSource.selectedCity) }
+    override val selectedCity: Flow<City?> = flow { emitAll(cityLocalDataSource.selectedCity) }
 
-    override suspend fun insertSelectedCity(city: City) = cityLocalDataSource.insertSelectedCity(city)
+    override suspend fun insertSelectedCity(city: City) =
+        cityLocalDataSource.insertSelectedCity(city)
 
     override val favCities: Flow<List<City>> = flow { emitAll(cityLocalDataSource.favCities) }
 
