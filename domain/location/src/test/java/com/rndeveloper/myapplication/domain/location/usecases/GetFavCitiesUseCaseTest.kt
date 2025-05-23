@@ -1,5 +1,6 @@
 package com.rndeveloper.myapplication.domain.location.usecases
 
+import com.rndeveloper.myapplication.domain.sampleCity
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Test

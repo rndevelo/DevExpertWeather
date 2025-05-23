@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface WeatherDao {
 
-    @Query("SELECT * FROM DbWeather WHERE lat = :lat AND lon = :lon")
+    @Query("SELECT * FROM weather WHERE lat = :lat AND lon = :lon")
     fun getWeather(lat: Double, lon: Double): Flow<DbWeather?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

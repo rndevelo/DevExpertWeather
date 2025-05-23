@@ -1,5 +1,6 @@
 package com.rndeveloper.myapplication.domain.weather.usecases
 
+import com.rndeveloper.myapplication.domain.sampleWeather
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Test

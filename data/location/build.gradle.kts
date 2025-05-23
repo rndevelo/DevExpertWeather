@@ -5,5 +5,5 @@ plugins {
 
 dependencies {
     implementation(project(":domain:location"))
-    implementation(libs.kotlinx.coroutines.core)
+    testImplementation(project(":test:unit"))
 }

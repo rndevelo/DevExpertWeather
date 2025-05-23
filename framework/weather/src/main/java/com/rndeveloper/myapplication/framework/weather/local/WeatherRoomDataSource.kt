@@ -9,8 +9,7 @@ import kotlinx.coroutines.flow.map
 internal class WeatherRoomDataSource @Inject constructor(private val weatherDao: WeatherDao) :
     WeatherLocalDataSource {
 
-    override fun weather(lat: Double, lon: Double): Flow<Weather?> =
-        weatherDao.getWeather(lat, lon).map { db -> db?.toWeather() }
+    override fun weather(lat: Double, lon: Double): Flow<Weather?> = weatherDao.getWeather(lat = lat, lon = lon).map { db -> db?.toWeather() }
 
     override suspend fun insertWeather(weather: Weather) =
         weatherDao.insertWeather(weather.toDbModel())

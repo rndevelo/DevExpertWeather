@@ -4,7 +4,7 @@ import com.rndeveloper.myapplication.data.location.datasources.CityRemoteDataSou
 import com.rndeveloper.myapplication.domain.location.City
 import jakarta.inject.Inject
 
-internal class WeatherServerDataSource @Inject constructor(private val cityService: CityService) : CityRemoteDataSource {
+internal class CityServerDataSource @Inject constructor(private val cityService: CityService) : CityRemoteDataSource {
 
     override suspend fun searchCities(query: String): List<City> {
         return try {

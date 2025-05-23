@@ -1,5 +1,5 @@
 [versions]
-agp = "8.9.1"
+agp = "8.9.3"
 coilCompose = "2.7.0"
 gson = "2.12.1"
 kotlin = "2.1.20"
@@ -8,15 +8,15 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 kotlinSerialization = "2.1.20"
-lifecycleRuntimeKtx = "2.8.7"
+lifecycleRuntimeKtx = "2.9.0"
 activityCompose = "1.10.1"
-composeBom = "2025.04.00"
-navigationCompose = "2.8.9"
+composeBom = "2025.05.01"
+navigationCompose = "2.9.0"
 okhttp = "4.12.0"
 playServicesLocation = "21.3.0"
 retrofit = "2.11.0"
-kotlinxSerialization = "1.6.3"
-roomKtx = "2.7.0"
+kotlinxSerialization = "1.7.3"
+roomKtx = "2.7.1"
 ksp = "2.1.20-1.0.31"
 jetbrainsKotlinJvm = "2.1.20"
 coroutines = "1.8.1"
@@ -24,9 +24,8 @@ appcompat = "1.7.0"
 material = "1.12.0"
 hilt = "2.55"
 hiltNavigationCompose = "1.2.0"
-mockitoKotlin = "5.3.1"
-junitJupiter = "5.8.1"
-
+mockitoKotlin = "5.4.0"
+turbine = "1.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -56,6 +55,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomKtx" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
@@ -64,10 +64,10 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
-junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

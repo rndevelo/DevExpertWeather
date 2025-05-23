@@ -5,5 +5,5 @@ plugins {
 
 dependencies {
     implementation(project(":domain:weather"))
-    implementation(libs.kotlinx.coroutines.core)
+    testImplementation(project(":test:unit"))
 }

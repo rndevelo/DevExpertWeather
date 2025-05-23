@@ -8,7 +8,7 @@ import com.rndeveloper.myapplication.data.location.datasources.CityRemoteDataSou
 import com.rndeveloper.myapplication.data.location.datasources.LocationDataSource
 import com.rndeveloper.myapplication.data.location.datasources.RegionDataSource
 import com.rndeveloper.myapplication.framework.location.local.CityRoomDataSource
-import com.rndeveloper.myapplication.framework.location.remote.WeatherServerDataSource
+import com.rndeveloper.myapplication.framework.location.remote.CityServerDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -30,7 +30,7 @@ internal abstract class FrameworkLocationBindsModule {
     abstract fun bindCityLocalDataSource(impl: CityRoomDataSource): CityLocalDataSource
 
     @Binds
-    abstract fun bindCityRemoteDataSource(impl: WeatherServerDataSource): CityRemoteDataSource
+    abstract fun bindCityRemoteDataSource(impl: CityServerDataSource): CityRemoteDataSource
 
 }
 

@@ -1,4 +1,4 @@
-package com.rndeveloper.myapplication.data.weather
+package com.rndeveloper.myapplication.domain
 
 import com.rndeveloper.myapplication.domain.weather.model.Current
 import com.rndeveloper.myapplication.domain.weather.model.DailyForecast

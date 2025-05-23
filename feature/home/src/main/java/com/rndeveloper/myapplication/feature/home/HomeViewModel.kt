@@ -64,7 +64,6 @@ class HomeViewModel @Inject constructor(
             (result as? Result.Success<City?>)?.data // Extrae City si es Success y no nulo
         }
         .flatMapLatest { city -> // city aquí ya no será null
-            delay(2000)
             getWeatherUseCase(city.lat, city.lon)
         }
         .stateAsResultIn(viewModelScope)
