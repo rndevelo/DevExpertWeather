@@ -1,5 +1,7 @@
 plugins {
     id("rndeveloper.android.library")
+    id("rndeveloper.android.room")
+    id("rndeveloper.jvm.retrofit")
     id("rndeveloper.di.library")
 }
 
@@ -8,7 +10,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain:common"))
+    implementation(project(":domain:location"))
     implementation(project(":data:location"))
     implementation(libs.play.services.location)
 }

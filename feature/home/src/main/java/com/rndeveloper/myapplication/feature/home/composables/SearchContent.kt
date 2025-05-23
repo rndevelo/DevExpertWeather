@@ -26,7 +26,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.rndeveloper.myapplication.domain.common.City
+import com.rndeveloper.myapplication.domain.location.City
 import com.rndeveloper.myapplication.feature.home.HomeAction
 import com.rndeveloper.myapplication.feature.home.R
 

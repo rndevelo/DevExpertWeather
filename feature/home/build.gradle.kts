@@ -8,7 +8,9 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain:common"))
     implementation(project(":domain:location"))
     implementation(project(":domain:weather"))
+    testImplementation(project(":test:unit"))
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
 }

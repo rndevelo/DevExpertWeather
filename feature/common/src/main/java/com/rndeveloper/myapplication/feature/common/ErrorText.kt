@@ -3,6 +3,7 @@ package com.rndeveloper.myapplication.feature.common
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
@@ -20,7 +21,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ErrorText(error: Throwable, modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
     ) {
@@ -33,7 +34,7 @@ fun ErrorText(error: Throwable, modifier: Modifier = Modifier) {
             Text(
                 text = error.localizedMessage ?: "An error occurred",
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
     }

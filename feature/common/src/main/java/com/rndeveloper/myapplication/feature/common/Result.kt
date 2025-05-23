@@ -30,11 +30,11 @@ fun <T> Flow<T>.stateAsResultIn(scope: CoroutineScope): StateFlow<Result<T>> =
             initialValue = Result.Loading
         )
 
-@Composable
-fun <T> Result<T>.ShowResult(content: @Composable () -> Unit){
-    when (this) {
-        is Result.Loading -> LoadingAnimation(modifier = Modifier.fillMaxSize())
-        is Result.Error -> ErrorText(error = exception)
-        is Result.Success -> content()
-    }
-}
+//@Composable
+//fun <T> Result<T>.ShowResult(content: @Composable () -> Unit){
+//    when (this) {
+//        is Result.Loading -> LoadingAnimation("",modifier = Modifier.fillMaxSize())
+//        is Result.Error -> ErrorText(error = exception)
+//        is Result.Success -> content()
+//    }
+//}

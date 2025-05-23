@@ -7,7 +7,7 @@ import com.google.gson.reflect.TypeToken
 import com.rndeveloper.myapplication.domain.weather.model.Current
 import com.rndeveloper.myapplication.domain.weather.model.DailyForecast
 
-@Entity(primaryKeys = ["lat", "lon"])
+@Entity(tableName = "weather", primaryKeys = ["lat", "lon"])
 data class DbWeather(
     val current: Current,
     val forecast: List<DailyForecast>,
