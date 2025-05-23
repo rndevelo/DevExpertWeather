@@ -61,7 +61,7 @@ fun HomeScreen(
     onForecastClick: (String, String, String) -> Unit = { _, _, _ -> }
 ) {
 
-    val state by vm.uiState.collectAsState()
+    val state by vm.state.collectAsState()
     var isLocationPermissionDenied by remember { mutableStateOf(false) }
 
     Screen {

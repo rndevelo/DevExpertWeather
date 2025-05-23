@@ -69,7 +69,7 @@ class HomeViewModel @Inject constructor(
         .stateAsResultIn(viewModelScope)
 
     // 📌 Combina todo en un solo estado reactivo de la UI
-    val uiState: StateFlow<UiState> = combine(
+    val state: StateFlow<UiState> = combine(
         weatherState,
         searchedCitiesState,
         favCitiesState,
