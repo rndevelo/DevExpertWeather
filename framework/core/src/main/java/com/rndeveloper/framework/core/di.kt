@@ -6,6 +6,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
 
 
@@ -37,5 +38,10 @@ internal object FrameworkWeatherModule {
     @Provides
     @Singleton
     fun provideCityService() = AppClient.cityService
+
+    @Provides
+    @Singleton
+    fun provideDispatcher() = Dispatchers.IO
+
 }
 

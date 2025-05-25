@@ -1,7 +1,6 @@
 package com.rndeveloper.myapplication.feature.home
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.rndeveloper.myapplication.domain.location.City
 import com.rndeveloper.myapplication.domain.location.usecases.GetFavCitiesUseCase
 import com.rndeveloper.myapplication.domain.location.usecases.GetFromLocationCityUseCase
@@ -14,7 +13,10 @@ import com.rndeveloper.myapplication.domain.weather.usecases.GetWeatherUseCase
 import com.rndeveloper.myapplication.feature.common.Result
 import com.rndeveloper.myapplication.feature.common.stateAsResultIn
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -42,8 +44,12 @@ class HomeViewModel @Inject constructor(
     getFavCitiesUseCase: GetFavCitiesUseCase,
     private val searchCitiesUseCase: SearchCitiesUseCase,
     private val toggleCityUseCase: ToggleCityUseCase,
-    private val getFromLocationCityUseCase: GetFromLocationCityUseCase
+    private val getFromLocationCityUseCase: GetFromLocationCityUseCase,
+    private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
+
+    // Crea el viewModelScope usando el dispatcher inyectado
+    private val viewModelScope = CoroutineScope(SupervisorJob() + dispatcher)
 
     // 🔍 Ciudades buscadas (ahora accesible desde la UI)
     private val _searchedCitiesState = MutableStateFlow<List<City>>(emptyList())
@@ -95,9 +101,9 @@ class HomeViewModel @Inject constructor(
         val favCities: List<City> = emptyList(),
     )
 
-    fun onAction(action: HomeAction) {
+    fun onAction(action: HomeAction) = viewModelScope.launch {
         when (action) {
-            is HomeAction.OnGetCityFromLocation -> viewModelScope.launch {
+            is HomeAction.OnGetCityFromLocation ->
                 getFromLocationCityUseCase()?.let { city ->
                     delay(2000)
 
@@ -105,19 +111,16 @@ class HomeViewModel @Inject constructor(
                     val searchedCity = results.first()
                     setSelectedCityUseCase(searchedCity)
                 }
-            }
 
-            is HomeAction.OnSearchCities -> viewModelScope.launch {
+            is HomeAction.OnSearchCities ->
                 _searchedCitiesState.value = searchCitiesUseCase(action.query)
-            }
 
-            is HomeAction.OnSelectedCity -> viewModelScope.launch {
+            is HomeAction.OnSelectedCity ->
                 setSelectedCityUseCase(action.city)
-            }
 
-            is HomeAction.OnToggleCity -> viewModelScope.launch {
+            is HomeAction.OnToggleCity ->
                 toggleCityUseCase(action.city, action.isFav)
-            }
+
         }
     }
 }
