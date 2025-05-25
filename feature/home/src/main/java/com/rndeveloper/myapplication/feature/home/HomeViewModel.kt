@@ -95,27 +95,25 @@ class HomeViewModel @Inject constructor(
         val favCities: List<City> = emptyList(),
     )
 
-    fun onAction(action: HomeAction) {
+    fun onAction(action: HomeAction) = viewModelScope.launch {
         when (action) {
-            is HomeAction.OnGetCityFromLocation -> viewModelScope.launch {
+            is HomeAction.OnGetCityFromLocation -> {
                 getFromLocationCityUseCase()?.let { city ->
-                    delay(2000)
-
                     val results = searchCitiesUseCase("${city.name}, ${city.country}")
                     val searchedCity = results.first()
                     setSelectedCityUseCase(searchedCity)
                 }
             }
 
-            is HomeAction.OnSearchCities -> viewModelScope.launch {
+            is HomeAction.OnSearchCities -> {
                 _searchedCitiesState.value = searchCitiesUseCase(action.query)
             }
 
-            is HomeAction.OnSelectedCity -> viewModelScope.launch {
+            is HomeAction.OnSelectedCity -> {
                 setSelectedCityUseCase(action.city)
             }
 
-            is HomeAction.OnToggleCity -> viewModelScope.launch {
+            is HomeAction.OnToggleCity -> {
                 toggleCityUseCase(action.city, action.isFav)
             }
         }
