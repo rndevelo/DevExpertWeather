@@ -30,7 +30,7 @@ class ForecastViewModel @Inject constructor(
         getWeatherUseCase(lat.toDouble(), lon.toDouble()).stateAsResultIn(viewModelScope)
 
     // Combine del nombre + weather
-    val uiState: StateFlow<UiState> = weatherState.map { weatherResult ->
+    val state: StateFlow<UiState> = weatherState.map { weatherResult ->
         UiState(
             cityName = cityName,
             weather = weatherResult

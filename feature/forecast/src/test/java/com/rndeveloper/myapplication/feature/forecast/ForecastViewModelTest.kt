@@ -1,139 +1,59 @@
 package com.rndeveloper.myapplication.feature.forecast
 
+import app.cash.turbine.test
+import com.rndeveloper.myapplication.domain.sampleCity
+import com.rndeveloper.myapplication.domain.sampleWeather
+import com.rndeveloper.myapplication.domain.weather.usecases.GetWeatherUseCase
+import com.rndeveloper.myapplication.feature.common.Result
+import com.rndeveloper.myapplication.testrules.CoroutinesTestRule
+import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.Mock
+import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 
+@OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(MockitoJUnitRunner::class)
 class ForecastViewModelTest {
 
-    @Test
-    fun `weatherState emission   success`() {
-        // Verify that weatherState emits Result.Success when getWeatherUseCase successfully returns weather data.
-        // TODO implement test
+    @get:Rule
+    val coroutinesTestRule = CoroutinesTestRule()
+
+    @Mock
+    lateinit var getWeatherUseCase: GetWeatherUseCase
+
+    private lateinit var vm: ForecastViewModel
+
+    val weather = sampleWeather()
+
+    @Before
+    fun setUp() {
+        whenever(getWeatherUseCase(any(), any())).thenReturn(flowOf(weather))
+        vm = ForecastViewModel(
+            "CityName",
+            "-34.6037",
+            "-58.3816",
+            getWeatherUseCase
+        )
+
     }
 
     @Test
-    fun `weatherState emission   error`() {
-        // Verify that weatherState emits Result.Error when getWeatherUseCase throws an exception.
-        // TODO implement test
-    }
+    fun `UI is updated with the weather on start`() = runTest {
 
-    @Test
-    fun `weatherState emission   loading`() {
-        // Verify that weatherState emits Result.Loading initially while getWeatherUseCase is processing.
-        // TODO implement test
-    }
-
-    @Test
-    fun `weatherState with invalid latitude`() {
-        // Test behavior when the provided latitude string cannot be parsed to a Double.
-        // This should ideally be caught before use case invocation, but testing the ViewModel's resilience is good.
-        // TODO implement test
-    }
-
-    @Test
-    fun `weatherState with invalid longitude`() {
-        // Test behavior when the provided longitude string cannot be parsed to a Double.
-        // Similar to latitude, this tests ViewModel resilience.
-        // TODO implement test
-    }
-
-    @Test
-    fun `weatherState when getWeatherUseCase returns null  if possible `() {
-        // If getWeatherUseCase can return null (though StateFlow typically handles this by not emitting),
-        // verify the behavior of weatherState.
-        // TODO implement test
-    }
-
-    @Test
-    fun `weatherState with viewModelScope cancellation`() {
-        // Verify that the flow collection for weatherState is properly cancelled when viewModelScope is cancelled,
-        // preventing leaks and further emissions.
-        // TODO implement test
-    }
-
-    @Test
-    fun `uiState initial state`() {
-        // Verify that uiState emits the initial UiState(cityName = "", weather = Result.Loading)
-        // before weatherState emits its first value or if there are no subscribers.
-        // TODO implement test
-    }
-
-    @Test
-    fun `uiState maps cityName correctly`() {
-        // Verify that uiState correctly maps the injected cityName to UiState.cityName.
-        // TODO implement test
-    }
-
-    @Test
-    fun `uiState maps weatherResult   success`() {
-        // Verify that uiState correctly maps Result.Success from weatherState to UiState.weather.
-        // TODO implement test
-    }
-
-    @Test
-    fun `uiState maps weatherResult   error`() {
-        // Verify that uiState correctly maps Result.Error from weatherState to UiState.weather.
-        // TODO implement test
-    }
-
-    @Test
-    fun `uiState maps weatherResult   loading`() {
-        // Verify that uiState correctly maps Result.Loading from weatherState to UiState.weather.
-        // TODO implement test
-    }
-
-    @Test
-    fun `uiState updates on subsequent weatherState emissions`() {
-        // Verify that if weatherState emits multiple values (e.g., Loading -> Success), uiState updates accordingly.
-        // TODO implement test
-    }
-
-    @Test
-    fun `uiState behavior with SharingStarted WhileSubscribed`() {
-        // Verify that the uiState flow starts collecting from weatherState only when there's at least one subscriber
-        // and stops after 5000ms of no subscribers, then restarts upon new subscription, emitting the initial or last known valid state.
-        // TODO implement test
-    }
-
-    @Test
-    fun `uiState with empty cityName`() {
-        // Test the scenario where the injected cityName is an empty string.
-        // The UiState should reflect this empty city name.
-        // TODO implement test
-    }
-
-    @Test
-    fun `uiState with null cityName  if possible through injection `() {
-        // Although Kotlin's non-null types prevent this by default, if cityName could somehow be null (e.g., from Java interop or misconfiguration),
-        // test how UiState handles it (likely a crash, which is good to identify).
-        // TODO implement test
-    }
-
-    @Test
-    fun `uiState when viewModelScope is cancelled during mapping`() {
-        // Verify behavior if viewModelScope is cancelled while the map operation for uiState is in progress.
-        // The flow should stop emitting.
-        // TODO implement test
-    }
-
-    @Test
-    fun `uiState multiple subscribers`() {
-        // Ensure that multiple subscribers to uiState all receive the same, correct emissions based on weatherState.
-        // TODO implement test
-    }
-
-    @Test
-    fun `uiState subscriber leaves and rejoins within 5s`() {
-        // Verify that if a subscriber unsubscribes and then resubscribes to uiState within the 5000ms window,
-        // it receives the last emitted value and the upstream weatherState flow is not restarted if it was still active.
-        // TODO implement test
-    }
-
-    @Test
-    fun `uiState subscriber leaves and rejoins after 5s`() {
-        // Verify that if a subscriber unsubscribes and then resubscribes to uiState after the 5000ms window,
-        // the upstream weatherState flow might be restarted (depending on its own sharing strategy), and uiState will emit its initial value
-        // before potentially new values from weatherState.
-        // TODO implement test
+        vm.weatherState.test {
+            assertEquals(Result.Loading, awaitItem())
+            assertEquals(Result.Success(weather), awaitItem())
+        }
     }
 
 }

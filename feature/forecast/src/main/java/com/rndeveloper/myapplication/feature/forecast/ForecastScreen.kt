@@ -51,7 +51,7 @@ fun ForecastScreen(
     vm: ForecastViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
-    val state by vm.uiState.collectAsState()
+    val state by vm.state.collectAsState()
 
     when (val weatherResult = state.weather) {
         is Result.Success -> {

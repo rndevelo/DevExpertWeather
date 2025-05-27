@@ -7,7 +7,7 @@ import com.rndeveloper.myapplication.domain.weather.model.Weather
 fun sampleWeather(lat: Double = -34.6037, lon: Double = -58.3816) = Weather(
     current = sampleCurrent(),
     forecast = sampleDailyForecastList(),
-    lastUpdated = System.currentTimeMillis(),
+    lastUpdated = 1748357424355,
     lat = lat,
     lon = lon
 )
