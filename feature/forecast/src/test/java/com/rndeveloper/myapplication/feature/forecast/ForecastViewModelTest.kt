@@ -1,16 +1,13 @@
 package com.rndeveloper.myapplication.feature.forecast
 
 import app.cash.turbine.test
-import com.rndeveloper.myapplication.domain.sampleCity
 import com.rndeveloper.myapplication.domain.sampleWeather
 import com.rndeveloper.myapplication.domain.weather.usecases.GetWeatherUseCase
 import com.rndeveloper.myapplication.feature.common.Result
 import com.rndeveloper.myapplication.testrules.CoroutinesTestRule
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -33,27 +30,24 @@ class ForecastViewModelTest {
 
     private lateinit var vm: ForecastViewModel
 
-    val weather = sampleWeather()
+    val expectedWeather = sampleWeather()
 
     @Before
     fun setUp() {
-        whenever(getWeatherUseCase(any(), any())).thenReturn(flowOf(weather))
+        whenever(getWeatherUseCase(any(), any())).thenReturn(flowOf(expectedWeather))
         vm = ForecastViewModel(
             "CityName",
             "-34.6037",
             "-58.3816",
             getWeatherUseCase
         )
-
     }
 
     @Test
     fun `UI is updated with the weather on start`() = runTest {
-
         vm.weatherState.test {
             assertEquals(Result.Loading, awaitItem())
-            assertEquals(Result.Success(weather), awaitItem())
+            assertEquals(Result.Success(expectedWeather), awaitItem())
         }
     }
-
 }

@@ -61,6 +61,10 @@ class HomeViewModelTest {
 
     private lateinit var vm: HomeViewModel
 
+    private val exceptedCity = sampleCity()
+
+    private val exceptedWeather = sampleWeather()
+
     @Before
     fun setUp() {
 
@@ -92,7 +96,6 @@ class HomeViewModelTest {
 
     @Test
     fun `Selected city is requested from database`() = runTest {
-        val exceptedSelectedCity = sampleCity()
         val selectedCitySourceFlow = MutableStateFlow<City?>(null)
 
         whenever(getSelectedCityUseCase()).thenReturn(selectedCitySourceFlow)
@@ -111,27 +114,21 @@ class HomeViewModelTest {
             getFromLocationCityUseCase
         )
 
-        runCurrent()
-
-        vm.state.test {
+        vm.selectedCityState.test {
 
             var currentState = awaitItem()
+
             println("Estado 1 (Post-Init): $currentState")
-            assertEquals(Result.Loading, currentState.selectedCity)
+            assertEquals(Result.Loading, currentState)
 
             // --- ACCIÓN: Seleccionar una ciudad ---
-            vm.onAction(HomeAction.OnSelectedCity(exceptedSelectedCity))
-            runCurrent() // Permite que la acción se procese y los flujos comiencen a reaccionar
+            vm.onAction(HomeAction.OnSelectedCity(exceptedCity))
 
-            // --- ESTADO 2: Ciudad seleccionada, Clima cargando ---
-            // selectedCityState ahora es Result.Success(selectedCityObject).
-            // weatherState se ha reiniciado (debido a flatMapLatest) y su stateAsResultIn
-            // emite Result.Loading primero antes de procesar el resultado de getWeatherUseCase.
             currentState = awaitItem()
+            // --- ESTADO 2: Ciudad seleccionada ---
+            // selectedCityState ahora es Result.Success(selectedCityObject).
             println("Estado 2 (Ciudad Seleccionada): $currentState")
-            assertEquals(Result.Success(exceptedSelectedCity), currentState.selectedCity)
-
-            cancelAndIgnoreRemainingEvents()
+            assertEquals(Result.Success(exceptedCity), currentState)
         }
     }
 
@@ -150,12 +147,9 @@ class HomeViewModelTest {
 
     @Test
     fun `Weather is requested when selected city is ready`() = runTest {
-        val exceptedWeather = sampleWeather() // Renombrado para claridad
-        val exceptedSelectedCity = sampleCity()    // Renombrado para claridad
 
         // 1. Configuración de Mocks
-        val selectedCitySourceFlow = MutableStateFlow<City?>(null)
-        whenever(getSelectedCityUseCase()).thenReturn(selectedCitySourceFlow) // Devuelve Flow<City?>
+        whenever(getSelectedCityUseCase()).thenReturn(flowOf(exceptedCity)) // Devuelve Flow<City?>
         whenever(
             getWeatherUseCase(
                 any(),
@@ -163,11 +157,6 @@ class HomeViewModelTest {
             )
         ).thenReturn(flowOf(exceptedWeather)) // Devuelve Flow<Weather>
 
-        whenever(setSelectedCityUseCase.invoke(any())).thenAnswer { invocation ->
-            val cityToSet = invocation.arguments.first() as City
-            selectedCitySourceFlow.value = cityToSet
-        }
-
         // 2. Reinicializa el ViewModel
         vm = HomeViewModel(
             getWeatherUseCase,
@@ -178,59 +167,34 @@ class HomeViewModelTest {
             toggleCityUseCase,
             getFromLocationCityUseCase
         )
-        // runCurrent() aquí permite que los stateIn iniciales (Loading) se procesen
-        // y también que selectedCitySourceFlow (null) se propague a Result.Loading
-        // para selectedCityState.
-        runCurrent()
 
         // 3. Assert: Verifica las emisiones del Flow 'state' con Turbine
-        vm.state.test {
+        vm.weatherState.test {
             // --- ESTADO 1: Inicialización Completa del ViewModel ---
             // selectedCityState será Result.Loading porque selectedCitySourceFlow es null
             // y stateAsResultIn lo mapea.
             // weatherState será Result.Loading porque su fuente (vía mapNotNull) no ha emitido una ciudad válida.
             var currentState = awaitItem()
+
             println("Estado 1 (Post-Init): $currentState")
-            assertEquals(Result.Loading, currentState.weatherResult)
+            assertEquals(Result.Loading, currentState)
 
-            // --- ACCIÓN: Seleccionar una ciudad ---
-            vm.onAction(HomeAction.OnSelectedCity(exceptedSelectedCity))
-            runCurrent() // Permite que la acción se procese y los flujos comiencen a reaccionar
-
-            // --- ESTADO 2: Ciudad seleccionada, Clima cargando ---
-            // selectedCityState ahora es Result.Success(selectedCityObject).
-            // weatherState se ha reiniciado (debido a flatMapLatest) y su stateAsResultIn
-            // emite Result.Loading primero antes de procesar el resultado de getWeatherUseCase.
             currentState = awaitItem()
-            println("Estado 2 (Ciudad Seleccionada, Clima Cargando): $currentState")
-            assertEquals(Result.Loading, currentState.weatherResult)
-
             // --- ESTADO 3: Ciudad seleccionada, Clima cargado con éxito ---
             // Ahora getWeatherUseCase (flowOf(expectedWeatherObject)) debería haber emitido,
             // y el stateAsResultIn de weatherState lo mapea a Result.Success.
-            currentState = awaitItem()
-            println("Estado 3 (Ciudad Seleccionada, Clima Éxito): $currentState")
-            assertEquals(Result.Success(exceptedWeather), currentState.weatherResult)
+            println("Estado 3 (Clima Éxito): $currentState")
+            assertEquals(Result.Success(exceptedWeather), currentState)
         }
     }
 
     @Test
     fun `Weather error is propagated when request fails`() = runTest {
         val exceptedError = RuntimeException("Boom!")
-        val exceptedSelectedCity = sampleCity()    // Renombrado para claridad
 
-        // 1. Configuración de Mocks
-        val selectedCitySourceFlow = MutableStateFlow<City?>(null)
-        whenever(getSelectedCityUseCase()).thenReturn(selectedCitySourceFlow) // Devuelve Flow<City?>
+        whenever(getSelectedCityUseCase()).thenReturn(flowOf(exceptedCity)) // Devuelve Flow<City?>
         whenever(getWeatherUseCase(any(), any())).thenThrow(exceptedError)
 
-
-        whenever(setSelectedCityUseCase.invoke(any())).thenAnswer { invocation ->
-            val cityToSet = invocation.arguments.first() as City
-            selectedCitySourceFlow.value = cityToSet
-        }
-
-        // 2. Reinicializa el ViewModel
         vm = HomeViewModel(
             getWeatherUseCase,
             getSelectedCityUseCase,
@@ -240,39 +204,15 @@ class HomeViewModelTest {
             toggleCityUseCase,
             getFromLocationCityUseCase
         )
-        // runCurrent() aquí permite que los stateIn iniciales (Loading) se procesen
-        // y también que selectedCitySourceFlow (null) se propague a Result.Loading
-        // para selectedCityState.
-        runCurrent()
 
-        // 3. Assert: Verifica las emisiones del Flow 'state' con Turbine
-        vm.state.test {
-            // --- ESTADO 1: Inicialización Completa del ViewModel ---
-            // selectedCityState será Result.Loading porque selectedCitySourceFlow es null
-            // y stateAsResultIn lo mapea.
-            // weatherState será Result.Loading porque su fuente (vía mapNotNull) no ha emitido una ciudad válida.
+        vm.weatherState.test {
             var currentState = awaitItem()
             println("Estado 1 (Post-Init): $currentState")
-            assertEquals(Result.Loading, currentState.weatherResult)
+            assertEquals(Result.Loading, currentState)
 
-            // --- ACCIÓN: Seleccionar una ciudad ---
-            vm.onAction(HomeAction.OnSelectedCity(exceptedSelectedCity))
-            runCurrent() // Permite que la acción se procese y los flujos comiencen a reaccionar
-
-            // --- ESTADO 2: Ciudad seleccionada, Clima cargando ---
-            // selectedCityState ahora es Result.Success(selectedCityObject).
-            // weatherState se ha reiniciado (debido a flatMapLatest) y su stateAsResultIn
-            // emite Result.Loading primero antes de procesar el resultado de getWeatherUseCase.
             currentState = awaitItem()
-            println("Estado 2 (Ciudad Seleccionada, Clima Cargando): $currentState")
-            assertEquals(Result.Loading, currentState.weatherResult)
-
-            // --- ESTADO 3: Ciudad seleccionada, Clima cargado con éxito ---
-            // Ahora getWeatherUseCase (flowOf(expectedWeatherObject)) debería haber emitido,
-            // y el stateAsResultIn de weatherState lo mapea a Result.Success.
-            currentState = awaitItem()
-            println("Estado 3 (Ciudad Seleccionada, Clima Éxito): $currentState")
-            val exceptionMessage = (currentState.weatherResult as Result.Error).exception.message
+            val exceptionMessage = (currentState as Result.Error).exception.message
+            println("Estado 2 (Clima Error): $exceptionMessage")
             assertEquals("Boom!", exceptionMessage)
         }
     }
@@ -286,20 +226,9 @@ class HomeViewModelTest {
 
         val exceptedFavCities = emptyList<City>()
 
-        whenever(getFavCitiesUseCase.invoke()).thenReturn(flowOf(exceptedFavCities))
-
-        vm = HomeViewModel(
-            getWeatherUseCase,
-            getSelectedCityUseCase,
-            setSelectedCityUseCase,
-            getFavCitiesUseCase,
-            searchCitiesUseCase,
-            toggleCityUseCase,
-            getFromLocationCityUseCase
-        )
-
-        vm.state.test {
-            assertEquals(exceptedFavCities, awaitItem().favCities)
+        vm.favCitiesState.test {
+            assertEquals(Result.Loading, awaitItem())
+            assertEquals(Result.Success(exceptedFavCities), awaitItem())
         }
     }
 
@@ -333,8 +262,6 @@ class HomeViewModelTest {
         whenever(searchCitiesUseCase.invoke(any())).thenReturn(expected)
 
         vm.onAction(HomeAction.OnSearchCities(""))
-
-//        runCurrent()
 
         assertEquals(expected, vm.searchedCitiesState.value)
     }
@@ -374,77 +301,4 @@ class HomeViewModelTest {
 
         verify(toggleCityUseCase).invoke(expectedCity, expectedIsFav)
     }
-
-
-//    Opcional unit test muy largo por gemini
-
-//    @Test
-//    fun `Weather is requested if selected city is ready`() = runTest {
-//        val expectedWeatherObject = sampleWeather() // Renombrado para claridad
-//        val selectedCityObject = sampleCity()    // Renombrado para claridad
-//
-//        // 1. Configuración de Mocks
-//        val selectedCitySourceFlow = MutableStateFlow<City?>(null)
-//        whenever(getSelectedCityUseCase()).thenReturn(selectedCitySourceFlow) // Devuelve Flow<City?>
-//        whenever(getWeatherUseCase(any(), any())).thenReturn(flowOf(expectedWeatherObject)) // Devuelve Flow<Weather>
-//        whenever(getFavCitiesUseCase()).thenReturn(flowOf(emptyList())) // Devuelve Flow<List<City>>
-//
-//        whenever(setSelectedCityUseCase.invoke(any())).thenAnswer { invocation ->
-//            val cityToSet = invocation.arguments.first() as City
-//            selectedCitySourceFlow.value = cityToSet
-//            Unit
-//        }
-//
-//        // 2. Reinicializa el ViewModel
-//        vm = HomeViewModel(
-//            getWeatherUseCase,
-//            getSelectedCityUseCase,
-//            setSelectedCityUseCase,
-//            getFavCitiesUseCase,
-//            searchCitiesUseCase,
-//            toggleCityUseCase,
-//            getFromLocationCityUseCase
-//        )
-//        // runCurrent() aquí permite que los stateIn iniciales (Loading) se procesen
-//        // y también que selectedCitySourceFlow (null) se propague a Result.Success(null)
-//        // para selectedCityState.
-//        runCurrent()
-//
-//        // 3. Assert: Verifica las emisiones del Flow 'state' con Turbine
-//        vm.state.test {
-//            // --- ESTADO 1: Inicialización Completa del ViewModel ---
-//            // selectedCityState será Result.Success(null) porque selectedCitySourceFlow es null
-//            // y stateAsResultIn lo mapea.
-//            // weatherState será Result.Loading porque su fuente (vía mapNotNull) no ha emitido una ciudad válida.
-//            // favCitiesState será Result.Success(emptyList) si getFavCitiesUseCase().stateAsResultIn funciona así.
-//            var currentState = awaitItem()
-//            println("Estado 1 (Post-Init): $currentState")
-//            assertEquals(Result.Loading, currentState.selectedCity)
-//            assertEquals(Result.Loading, currentState.weatherResult)
-//            // Podrías añadir aserciones para favCities y searchedCities si es relevante para el estado inicial.
-//
-//            // --- ACCIÓN: Seleccionar una ciudad ---
-//            vm.onAction(HomeAction.OnSelectedCity(selectedCityObject))
-//            runCurrent() // Permite que la acción se procese y los flujos comiencen a reaccionar
-//
-//            // --- ESTADO 2: Ciudad seleccionada, Clima cargando ---
-//            // selectedCityState ahora es Result.Success(selectedCityObject).
-//            // weatherState se ha reiniciado (debido a flatMapLatest) y su stateAsResultIn
-//            // emite Result.Loading primero antes de procesar el resultado de getWeatherUseCase.
-//            currentState = awaitItem()
-//            println("Estado 2 (Ciudad Seleccionada, Clima Cargando): $currentState")
-//            assertEquals(Result.Success(selectedCityObject), currentState.selectedCity)
-//            assertEquals(Result.Loading, currentState.weatherResult)
-//
-//            // --- ESTADO 3: Ciudad seleccionada, Clima cargado con éxito ---
-//            // Ahora getWeatherUseCase (flowOf(expectedWeatherObject)) debería haber emitido,
-//            // y el stateAsResultIn de weatherState lo mapea a Result.Success.
-//            currentState = awaitItem()
-//            println("Estado 3 (Ciudad Seleccionada, Clima Éxito): $currentState")
-//            assertEquals(Result.Success(selectedCityObject), currentState.selectedCity)
-//            assertEquals(Result.Success(expectedWeatherObject), currentState.weatherResult)
-//
-//            cancelAndIgnoreRemainingEvents()
-//        }
-//    }
 }
