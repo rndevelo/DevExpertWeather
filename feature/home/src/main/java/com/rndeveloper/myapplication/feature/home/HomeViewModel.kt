@@ -40,8 +40,8 @@ class HomeViewModel @Inject constructor(
     getSelectedCityUseCase: GetSelectedCityUseCase,
     private val setSelectedCityUseCase: SetSelectedCityUseCase,
     getFavCitiesUseCase: GetFavCitiesUseCase,
-    private val searchCitiesUseCase: SearchCitiesUseCase,
     private val toggleCityUseCase: ToggleCityUseCase,
+    private val searchCitiesUseCase: SearchCitiesUseCase,
     private val getFromLocationCityUseCase: GetFromLocationCityUseCase
 ) : ViewModel() {
 

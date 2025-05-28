@@ -76,8 +76,8 @@ class HomeViewModelTest {
             getSelectedCityUseCase,
             setSelectedCityUseCase,
             getFavCitiesUseCase,
-            searchCitiesUseCase,
             toggleCityUseCase,
+            searchCitiesUseCase,
             getFromLocationCityUseCase
         )
     }
@@ -109,8 +109,8 @@ class HomeViewModelTest {
             getSelectedCityUseCase,
             setSelectedCityUseCase,
             getFavCitiesUseCase,
-            searchCitiesUseCase,
             toggleCityUseCase,
+            searchCitiesUseCase,
             getFromLocationCityUseCase
         )
 
@@ -163,8 +163,8 @@ class HomeViewModelTest {
             getSelectedCityUseCase,
             setSelectedCityUseCase,
             getFavCitiesUseCase,
-            searchCitiesUseCase,
             toggleCityUseCase,
+            searchCitiesUseCase,
             getFromLocationCityUseCase
         )
 
@@ -200,8 +200,8 @@ class HomeViewModelTest {
             getSelectedCityUseCase,
             setSelectedCityUseCase,
             getFavCitiesUseCase,
-            searchCitiesUseCase,
             toggleCityUseCase,
+            searchCitiesUseCase,
             getFromLocationCityUseCase
         )
 
