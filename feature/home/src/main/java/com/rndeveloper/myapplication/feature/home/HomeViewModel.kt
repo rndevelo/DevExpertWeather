@@ -15,7 +15,6 @@ import com.rndeveloper.myapplication.feature.common.Result
 import com.rndeveloper.myapplication.feature.common.stateAsResultIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +28,7 @@ import javax.inject.Inject
 
 sealed interface HomeAction {
     data class OnSearchCities(val query: String) : HomeAction
-    data object OnGetCityFromLocation : HomeAction
+    data object OnGetCityFromGPSLocation : HomeAction
     data class OnSelectedCity(val city: City) : HomeAction
     data class OnToggleCity(val city: City, val isFav: Boolean) : HomeAction
 }
@@ -42,7 +41,7 @@ class HomeViewModel @Inject constructor(
     getFavCitiesUseCase: GetFavCitiesUseCase,
     private val toggleCityUseCase: ToggleCityUseCase,
     private val searchCitiesUseCase: SearchCitiesUseCase,
-    private val getFromLocationCityUseCase: GetFromLocationCityUseCase
+    private val getCityFromLocationGPSUseCase: GetFromLocationCityUseCase
 ) : ViewModel() {
 
     // 🔍 Ciudades buscadas (ahora accesible desde la UI)
@@ -97,8 +96,8 @@ class HomeViewModel @Inject constructor(
 
     fun onAction(action: HomeAction) = viewModelScope.launch {
         when (action) {
-            is HomeAction.OnGetCityFromLocation -> {
-                getFromLocationCityUseCase()?.let { city ->
+            is HomeAction.OnGetCityFromGPSLocation -> {
+                getCityFromLocationGPSUseCase()?.let { city ->
                     val results = searchCitiesUseCase("${city.name}, ${city.country}")
                     val searchedCity = results.first()
                     setSelectedCityUseCase(searchedCity)

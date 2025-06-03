@@ -57,21 +57,24 @@ class FakeWeatherRemoteDataSource : WeatherRemoteDataSource {
 
 fun buildCityRepositoryWith(
     selectedCityLocalData: City? = null,
-    favCitiesLocalData: MutableList<City> = mutableListOf<City>(),
+    favCitiesLocalData: List<City> = mutableListOf<City>(),
     searchedCityRemoteData: List<City> = emptyList()
 ): CityRepository {
-    val cityLocalDataSource =
-        FakeCityLocalDataSource().apply { inMemorySelectedCity.value = selectedCityLocalData }
-            .apply { inMemoryFavCities.value = favCitiesLocalData }
-    val cityRemoteDataSource =
+    val fakeCityLocalDataSource =
+        FakeCityLocalDataSource().apply {
+            inMemorySelectedCity.value = selectedCityLocalData
+            inMemoryFavCities.value = favCitiesLocalData
+        }
+    val fakeCityRemoteDataSource =
         FakeCityRemoteDataSource().apply { inMemorySearchedCities = searchedCityRemoteData }
-    return CityRepositoryImpl(cityLocalDataSource, cityRemoteDataSource)
+    return CityRepositoryImpl(fakeCityLocalDataSource, fakeCityRemoteDataSource)
 }
 
 class FakeCityLocalDataSource : CityLocalDataSource {
 
     val inMemorySelectedCity = MutableStateFlow<City?>(null)
-    val inMemoryFavCities = MutableStateFlow<MutableList<City>>(mutableListOf())
+    val inMemoryFavCities = MutableStateFlow<List<City>>(emptyList())
+
 
     override val selectedCity: Flow<City?> = inMemorySelectedCity
 
@@ -82,11 +85,13 @@ class FakeCityLocalDataSource : CityLocalDataSource {
     }
 
     override suspend fun insertFavCity(city: City) {
-        inMemoryFavCities.map { it.add(city) }
+        val current = inMemoryFavCities.value
+        inMemoryFavCities.value = current.toMutableList().apply { add(city) }
     }
 
     override suspend fun deleteFavCity(city: City) {
-        inMemoryFavCities.map { it.firstOrNull { favCity -> favCity == city } }
+        val current = inMemoryFavCities.value
+        inMemoryFavCities.value = current.toMutableList().apply { remove(city) }
     }
 }
 
@@ -98,12 +103,13 @@ class FakeCityRemoteDataSource : CityRemoteDataSource {
 }
 
 
-// FAKE City Repository
+// FAKE Region Repository
 
 fun buildRegionRepositoryWith(
     cityGPSRemoteData: City? = null,
 ): RegionRepository {
-    val regionRemoteDataSource = FakeRegionDataSource().apply { inMemoryCity.value = cityGPSRemoteData }
+    val regionRemoteDataSource =
+        FakeRegionDataSource().apply { inMemoryCity.value = cityGPSRemoteData }
     return RegionRepositoryImpl(regionRemoteDataSource)
 }
 

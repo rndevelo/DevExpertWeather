@@ -114,7 +114,7 @@ fun HomeScreen(
                     )
                     PermissionRequestEffect(permission = Manifest.permission.ACCESS_COARSE_LOCATION) {
                         if (it) {
-                            vm.onAction(HomeAction.OnGetCityFromLocation)
+                            vm.onAction(HomeAction.OnGetCityFromGPSLocation)
                         } else {
                             isLocationPermissionDenied = true
                         }
@@ -134,7 +134,7 @@ fun HomeScreen(
 
                 PermissionRequestEffect(permission = Manifest.permission.ACCESS_COARSE_LOCATION) {
                     if (it) {
-                        vm.onAction(HomeAction.OnGetCityFromLocation)
+                        vm.onAction(HomeAction.OnGetCityFromGPSLocation)
                     } else {
                         isLocationPermissionDenied = true
                     }

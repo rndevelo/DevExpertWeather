@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface CityLocalDataSource {
     val selectedCity: Flow<City?>
-    suspend fun insertSelectedCity(city: City)
     val favCities: Flow<List<City>>
+    suspend fun insertSelectedCity(city: City)
     suspend fun insertFavCity(city: City)
     suspend fun deleteFavCity(city: City)
 }

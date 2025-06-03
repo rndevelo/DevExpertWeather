@@ -247,7 +247,7 @@ class HomeViewModelTest {
             expectedSearchedCity
         )
 
-        vm.onAction(HomeAction.OnGetCityFromLocation)
+        vm.onAction(HomeAction.OnGetCityFromGPSLocation)
 
         runCurrent()
 
