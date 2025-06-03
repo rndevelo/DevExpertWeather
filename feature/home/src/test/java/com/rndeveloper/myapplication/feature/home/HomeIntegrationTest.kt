@@ -15,14 +15,13 @@ import com.rndeveloper.myapplication.domain.sampleCity
 import com.rndeveloper.myapplication.domain.sampleWeather
 import com.rndeveloper.myapplication.domain.weather.model.Weather
 import com.rndeveloper.myapplication.domain.weather.usecases.GetWeatherUseCase
+import com.rndeveloper.myapplication.feature.common.Result
 import com.rndeveloper.myapplication.testrules.CoroutinesTestRule
 import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
-import com.rndeveloper.myapplication.feature.common.Result
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runCurrent
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeIntegrationTest {
@@ -100,7 +99,6 @@ class HomeIntegrationTest {
             assertEquals(Result.Success(cityData), awaitItem())
 
             vm.onAction(HomeAction.OnSelectedCity(otherCityData))
-            runCurrent()
 
             assertEquals(Result.Success(otherCityData), awaitItem())
         }
@@ -119,7 +117,6 @@ class HomeIntegrationTest {
             assertEquals(Result.Success(localFavCitiesData), awaitItem())
 
             vm.onAction(HomeAction.OnToggleCity(otherCityData, false))
-            runCurrent()
 
             assertEquals(Result.Success(listOf<City>(cityData, otherCityData)), awaitItem())
         }
@@ -176,8 +173,6 @@ class HomeIntegrationTest {
             assertEquals(Result.Success(cityData), awaitItem())
         }
     }
-
-
 }
 
 private fun buildViewModelWith(
