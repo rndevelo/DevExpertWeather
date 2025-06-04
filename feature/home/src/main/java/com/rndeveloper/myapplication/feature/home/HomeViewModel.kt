@@ -77,7 +77,7 @@ class HomeViewModel @Inject constructor(
 
         UiState(
             selectedCity = selectedCityResult,
-            weatherResult = weatherResult,
+            weather = weatherResult,
             searchedCities = searchedCities,
             favCities = when (favCitiesResult) {
                 is Result.Success -> favCitiesResult.data
@@ -89,7 +89,7 @@ class HomeViewModel @Inject constructor(
 
     data class UiState(
         val selectedCity: Result<City?> = Result.Loading,
-        val weatherResult: Result<Weather> = Result.Loading,
+        val weather: Result<Weather> = Result.Loading,
         val searchedCities: List<City> = emptyList(),
         val favCities: List<City> = emptyList(),
     )

@@ -16,10 +16,8 @@ import com.rndeveloper.myapplication.domain.weather.WeatherRepository
 import com.rndeveloper.myapplication.domain.weather.model.Weather
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
 
 // FAKE Weather Repository
-
 fun buildWeatherRepositoryWith(
     weatherLocalData: Weather? = null,
     weatherRemoteData: Weather? = null
@@ -54,7 +52,6 @@ class FakeWeatherRemoteDataSource : WeatherRemoteDataSource {
 
 
 // FAKE City Repository
-
 fun buildCityRepositoryWith(
     selectedCityLocalData: City? = null,
     favCitiesLocalData: List<City> = mutableListOf<City>(),
@@ -104,7 +101,6 @@ class FakeCityRemoteDataSource : CityRemoteDataSource {
 
 
 // FAKE Region Repository
-
 fun buildRegionRepositoryWith(
     cityGPSRemoteData: City? = null,
 ): RegionRepository {

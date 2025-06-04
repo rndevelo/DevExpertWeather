@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -29,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import com.rndeveloper.myapplication.domain.location.City
 import com.rndeveloper.myapplication.feature.home.HomeAction
 import com.rndeveloper.myapplication.feature.home.R
+
+const val SEARCH_TEXT_FIELD_TAG = "SearchTextField"
 
 @Composable
 fun SearchContent(
@@ -50,7 +53,7 @@ fun SearchContent(
                 cityName = newCityName
             },
             label = { Text(stringResource(R.string.home_text_search_city)) },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag(SEARCH_TEXT_FIELD_TAG),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Search,
                 capitalization = KeyboardCapitalization.Words
@@ -63,8 +66,8 @@ fun SearchContent(
         LazyColumn {
             items(searchedCities) { city ->
                 CityItem(
-                    city = city,
-                    favCities = favCities,
+                    title = "${city.name}, ${city.country}",
+                    isFav = favCities.contains(city),
                     onSaveCity = {
                         onAction(
                             HomeAction.OnToggleCity(
@@ -86,8 +89,8 @@ fun SearchContent(
 
 @Composable
 fun CityItem(
-    city: City,
-    favCities: List<City>,
+    title: String,
+    isFav: Boolean,
     onSaveCity: () -> Unit,
     onSelectedCity: () -> Unit
 ) {
@@ -100,10 +103,10 @@ fun CityItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "${city.name}, ${city.country}",
+            text = title,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        FavouriteIconButtonContent(isFav = favCities.contains(city), onSaveCity = onSaveCity)
+        FavouriteIconButtonContent(isFav = isFav, onSaveCity = onSaveCity)
     }
 }

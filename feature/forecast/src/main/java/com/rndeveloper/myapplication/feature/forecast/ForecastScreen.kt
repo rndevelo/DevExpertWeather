@@ -52,6 +52,16 @@ fun ForecastScreen(
     onBack: () -> Unit
 ) {
     val state by vm.state.collectAsState()
+    ForecastScreen(state = state, onBack = onBack)
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ForecastScreen(
+    state: ForecastViewModel.UiState,
+    onBack: () -> Unit = {}
+) {
 
     when (val weatherResult = state.weather) {
         is Result.Success -> {

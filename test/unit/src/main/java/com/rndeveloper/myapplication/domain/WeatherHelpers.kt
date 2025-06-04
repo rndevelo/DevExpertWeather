@@ -11,6 +11,7 @@ fun sampleWeather(lat: Double = -34.6037, lon: Double = -58.3816) = Weather(
     lat = lat,
     lon = lon
 )
+
 fun sampleCurrent() = Current(
     date = "2023-09-25",
     weatherDescription = "Sunny",
@@ -20,4 +21,22 @@ fun sampleCurrent() = Current(
     windSpeed = 5.0,
     precipitation = 5.0
 )
-fun sampleDailyForecastList() = emptyList<DailyForecast>()
+
+fun sampleDailyForecastList() = listOf<DailyForecast>(
+    DailyForecast(
+        date = "2023-09-25",
+        weatherDescription = "Sunny",
+        weatherIcon = "https://example.com/icon.png",
+        maxTemperature = 25.0,
+        minTemperature = 15.0,
+        precipitation = 5.0
+    ),
+    DailyForecast(
+        date = "2023-09-26",
+        weatherDescription = "Cloudy",
+        weatherIcon = "https://example.com/icon.png",
+        maxTemperature = 25.0,
+        minTemperature = 15.0,
+        precipitation = 5.0
+    )
+)

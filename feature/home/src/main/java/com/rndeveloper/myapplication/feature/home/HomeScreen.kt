@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rndeveloper.myapplication.domain.location.City
-import com.rndeveloper.myapplication.domain.weather.model.Weather
 import com.rndeveloper.myapplication.feature.common.ErrorText
 import com.rndeveloper.myapplication.feature.common.LoadingAnimation
 import com.rndeveloper.myapplication.feature.common.MyTopAppBar
@@ -52,16 +52,33 @@ import com.rndeveloper.myapplication.feature.home.composables.PermissionRequestE
 import com.rndeveloper.myapplication.feature.home.composables.SearchContent
 import com.rndeveloper.myapplication.feature.home.composables.ShowDialogIfPermissionIsDenied
 
+const val FLOATING_ACTION_BUTTON_TAG = "FloatingActionButton"
+
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     vm: HomeViewModel = hiltViewModel(),
     onForecastClick: (String, String, String) -> Unit = { _, _, _ -> }
 ) {
-
     val state by vm.state.collectAsState()
+    HomeScreen(
+        state = state,
+        onAction = vm::onAction,
+        onForecastClick = onForecastClick
+    )
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreen(
+    state: HomeViewModel.UiState,
+    onAction: (HomeAction) -> Unit = {},
+    onForecastClick: (String, String, String) -> Unit = { _, _, _ -> }
+) {
+
+//    val state by vm.state.collectAsState()
     var isLocationPermissionDenied by remember { mutableStateOf(false) }
 
     Screen {
@@ -72,7 +89,7 @@ fun HomeScreen(
 
                 if (selectedCity != null) {
 
-                    when (state.weatherResult) {
+                    when (state.weather) {
                         is Result.Loading -> {
                             LoadingAnimation(
                                 stringResource(R.string.home_text_obtaining_weather_data),
@@ -81,8 +98,7 @@ fun HomeScreen(
                         }
 
                         is Result.Success -> {
-                            val weather =
-                                (state.weatherResult as Result.Success<Weather>).data.current
+                            val weather = state.weather.data.current
                             HomeContent(
                                 selectedCity = selectedCity,
                                 date = weather.date,
@@ -94,7 +110,7 @@ fun HomeScreen(
                                 precipitation = weather.precipitation,
                                 favCities = state.favCities,
                                 searchedCities = state.searchedCities,
-                                onAction = vm::onAction,
+                                onAction = onAction,
                                 onForecastClick = {
                                     onForecastClick(
                                         selectedCity.name,
@@ -105,16 +121,16 @@ fun HomeScreen(
                             )
                         }
 
-                        is Result.Error -> ErrorText(error = (state.weatherResult as Result.Error).exception)
+                        is Result.Error -> ErrorText(error = state.weather.exception)
                     }
                 } else {
                     LoadingAnimation(
-                        stringResource(R.string.app_text_processing_selected_location),
+                        text = stringResource(R.string.app_text_processing_selected_location),
                         modifier = Modifier.fillMaxSize()
                     )
                     PermissionRequestEffect(permission = Manifest.permission.ACCESS_COARSE_LOCATION) {
                         if (it) {
-                            vm.onAction(HomeAction.OnGetCityFromGPSLocation)
+                            onAction(HomeAction.OnGetCityFromGPSLocation)
                         } else {
                             isLocationPermissionDenied = true
                         }
@@ -125,7 +141,7 @@ fun HomeScreen(
                         searchedCities = state.searchedCities,
                         isLocationPermissionDenied = isLocationPermissionDenied,
                         onIsLocationPermissionDenied = { isLocationPermissionDenied = false },
-                        onAction = vm::onAction
+                        onAction = onAction
                     )
                 }
             }
@@ -134,11 +150,12 @@ fun HomeScreen(
 
                 PermissionRequestEffect(permission = Manifest.permission.ACCESS_COARSE_LOCATION) {
                     if (it) {
-                        vm.onAction(HomeAction.OnGetCityFromGPSLocation)
+                        onAction(HomeAction.OnGetCityFromGPSLocation)
                     } else {
                         isLocationPermissionDenied = true
                     }
                 }
+                ErrorText(error = state.selectedCity.exception)
             }
 
             is Result.Loading -> {
@@ -199,6 +216,7 @@ fun HomeContent(
                 text = { Text(stringResource(R.string.forecast_text_7_day_forecast)) },
                 icon = { Text("\uD83D\uDCCA") },
                 onClick = onForecastClick,
+                modifier = Modifier.testTag(FLOATING_ACTION_BUTTON_TAG)
             )
         },
         contentWindowInsets = WindowInsets.safeDrawing
