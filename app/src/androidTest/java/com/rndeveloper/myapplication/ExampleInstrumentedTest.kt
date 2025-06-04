@@ -26,7 +26,7 @@ class ExampleInstrumentedTest {
 
     @get:Rule(order = 1)
     val locationPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(
-        "android.permission.ACCESS_FINE_LOCATION"
+        "android.permission.ACCESS_COARSE_LOCATION"
     )
 
     @Inject
