@@ -5,7 +5,6 @@ import retrofit2.http.Query
 
 interface WeatherService {
 
-//    Debería de tener 2 peticiones en distintas? Ya que este endpoint lo uso para 2 cosas distintas pero este mismo me provee las 2
     @GET("forecast")
     suspend fun fetchWeather(
         @Query("latitude") lat: Double,

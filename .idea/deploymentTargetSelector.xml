@@ -8,16 +8,16 @@
       <SelectionState runConfigName="HomeScreenTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="whenFavoriteClicked_listenerIsCalled()">
+      <SelectionState runConfigName="click_a_floating_button_navigates_to_forecast()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="whenNavigateClicked_listenerIsCalled() (1)">
+      <SelectionState runConfigName="click_a_floatiing_button_navigates_to_forecast()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="ForecastScreenTest">
+      <SelectionState runConfigName="check_mock_server_is_working()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="whenSelectedCitySuccessState_showSelectedCity()">
+      <SelectionState runConfigName="MainInstrumentedTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

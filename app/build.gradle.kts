@@ -53,18 +53,14 @@ dependencies {
 //    Navigation
     implementation(libs.androidx.navigation.compose)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    androidTestImplementation(libs.androidx.test.core)
-    androidTestImplementation(libs.androidx.test.rules)
+//    Hilt Test
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
 
+//    Room Test
+    androidTestImplementation(libs.androidx.room.ktx)
+    kspAndroidTest(libs.androidx.room.compiler)
 
-
+//    Mock Web Server
+    androidTestImplementation(libs.okhttp.mockwebserver)
 }

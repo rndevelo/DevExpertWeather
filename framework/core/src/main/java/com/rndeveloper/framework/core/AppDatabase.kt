@@ -13,7 +13,7 @@ import com.rndeveloper.myapplication.framework.weather.local.WeatherTypeConverte
 
 @Database(entities = [DbSelectedCity::class, DbFavCity::class, DbWeather::class], version = 1, exportSchema = false)
 @TypeConverters(WeatherTypeConverters::class)
-internal abstract class AppDatabase: RoomDatabase() {
+abstract class AppDatabase: RoomDatabase() {
     abstract fun weatherDao(): WeatherDao
     abstract fun favCitiesDao(): FavCityDao
     abstract fun selectedCityDao(): SelectedCityDao

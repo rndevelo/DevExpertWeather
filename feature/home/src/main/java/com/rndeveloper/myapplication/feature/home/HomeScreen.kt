@@ -54,7 +54,6 @@ import com.rndeveloper.myapplication.feature.home.composables.ShowDialogIfPermis
 
 const val FLOATING_ACTION_BUTTON_TAG = "FloatingActionButton"
 
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
@@ -78,7 +77,6 @@ fun HomeScreen(
     onForecastClick: (String, String, String) -> Unit = { _, _, _ -> }
 ) {
 
-//    val state by vm.state.collectAsState()
     var isLocationPermissionDenied by remember { mutableStateOf(false) }
 
     Screen {

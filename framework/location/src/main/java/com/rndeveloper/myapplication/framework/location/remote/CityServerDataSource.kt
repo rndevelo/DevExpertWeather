@@ -6,12 +6,7 @@ import jakarta.inject.Inject
 
 internal class CityServerDataSource @Inject constructor(private val cityService: CityService) : CityRemoteDataSource {
 
-    override suspend fun searchCities(query: String): List<City> {
-        return try {
-            val response = cityService.searchCities(query)
-            response.results.map { it.toCity() }
-        } catch (e: Exception) {
-            emptyList()
-        }
-    }
+    override suspend fun searchCities(query: String): List<City> =
+        cityService.searchCities(query).results.map { it.toCity() }
+
 }
