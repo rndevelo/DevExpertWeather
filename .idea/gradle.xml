@@ -29,7 +29,6 @@
             <option value="$PROJECT_DIR$/data/location" />
             <option value="$PROJECT_DIR$/data/weather" />
             <option value="$PROJECT_DIR$/domain" />
-            <option value="$PROJECT_DIR$/domain/common" />
             <option value="$PROJECT_DIR$/domain/location" />
             <option value="$PROJECT_DIR$/domain/weather" />
             <option value="$PROJECT_DIR$/feature" />
@@ -37,8 +36,11 @@
             <option value="$PROJECT_DIR$/feature/forecast" />
             <option value="$PROJECT_DIR$/feature/home" />
             <option value="$PROJECT_DIR$/framework" />
+            <option value="$PROJECT_DIR$/framework/core" />
             <option value="$PROJECT_DIR$/framework/location" />
             <option value="$PROJECT_DIR$/framework/weather" />
+            <option value="$PROJECT_DIR$/test" />
+            <option value="$PROJECT_DIR$/test/unit" />
           </set>
         </option>
       </GradleProjectSettings>

@@ -10,7 +10,7 @@ class DiLibraryConventionPlugin : Plugin<Project> {
 
             dependencies {
                 add("implementation", libs.findLibrary("hilt-core").get())
-                add("ksp", libs.findLibrary("hilt-android-compiler").get())
+                add("ksp", libs.findLibrary("hilt-compiler").get())
             }
         }
     }

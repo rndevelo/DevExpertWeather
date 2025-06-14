@@ -29,9 +29,8 @@ class ForecastViewModel @Inject constructor(
     val weatherState: StateFlow<Result<Weather>> =
         getWeatherUseCase(lat.toDouble(), lon.toDouble()).stateAsResultIn(viewModelScope)
 
-
     // Combine del nombre + weather
-    val uiState: StateFlow<UiState> = weatherState.map { weatherResult ->
+    val state: StateFlow<UiState> = weatherState.map { weatherResult ->
         UiState(
             cityName = cityName,
             weather = weatherResult
@@ -41,7 +40,6 @@ class ForecastViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(5000),
         UiState()
     )
-
 
     data class UiState(
         val cityName: String = "",

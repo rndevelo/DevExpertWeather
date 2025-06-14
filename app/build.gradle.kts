@@ -14,7 +14,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.rndeveloper.myapplication.di.HiltTestRunner"
 
         val properties = Properties()
         properties.load(project.rootProject.file("local.properties").readText().byteInputStream())
@@ -39,11 +39,11 @@ android {
 
 dependencies {
 
-    implementation(project(":domain:common"))
     implementation(project(":domain:location"))
     implementation(project(":domain:weather"))
     implementation(project(":data:location"))
     implementation(project(":data:weather"))
+    implementation(project(":framework:core"))
     implementation(project(":framework:location"))
     implementation(project(":framework:weather"))
     implementation(project(":feature:common"))
@@ -53,11 +53,14 @@ dependencies {
 //    Navigation
     implementation(libs.androidx.navigation.compose)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+//    Hilt Test
+    androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest(libs.hilt.compiler)
+
+//    Room Test
+    androidTestImplementation(libs.androidx.room.ktx)
+    kspAndroidTest(libs.androidx.room.compiler)
+
+//    Mock Web Server
+    androidTestImplementation(libs.okhttp.mockwebserver)
 }

@@ -1,9 +1,9 @@
 package com.rndeveloper.myapplication
 
 import com.android.build.api.dsl.CommonExtension
-import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.withType
@@ -18,16 +18,17 @@ internal fun Project.configureKotlinAndroid(
         defaultConfig {
             minSdk = 24
         }
+    }
 
-        compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_17
-            targetCompatibility = JavaVersion.VERSION_17
+    extensions.configure<JavaPluginExtension> {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(21))
         }
     }
 
     tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_17.toString()
+            jvmTarget = "21"
         }
     }
 
@@ -35,14 +36,20 @@ internal fun Project.configureKotlinAndroid(
         add("implementation", libs.findLibrary("androidx.core.ktx").get())
         add("implementation", libs.findLibrary("androidx.lifecycle.runtime.ktx").get())
     }
+
+    addUnitTestDependencies()
 }
 
 internal fun Project.configureKotlinJvm() {
     extensions.configure<JavaPluginExtension> {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(21))
+        }
     }
-    tasks.withType<KotlinCompile>().configureEach {
-        kotlinOptions.jvmTarget = "17"
+
+    dependencies {
+        add("implementation", libs.findLibrary("kotlinx.coroutines.core").get())
     }
+
+    addUnitTestDependencies()
 }

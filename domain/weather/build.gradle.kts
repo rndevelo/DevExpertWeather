@@ -3,7 +3,6 @@ plugins {
     id("rndeveloper.di.library")
 }
 
-dependencies {
-    implementation(project(":domain:common"))
-    implementation(libs.kotlinx.coroutines.core)
+dependencies{
+    testImplementation(project(":test:unit"))
 }

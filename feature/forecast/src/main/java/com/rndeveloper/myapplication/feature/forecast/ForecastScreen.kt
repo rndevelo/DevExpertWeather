@@ -37,11 +37,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rndeveloper.myapplication.domain.weather.model.DailyForecast
+import com.rndeveloper.myapplication.feature.common.ErrorText
+import com.rndeveloper.myapplication.feature.common.LoadingAnimation
 import com.rndeveloper.myapplication.feature.common.MyTopAppBar
 import com.rndeveloper.myapplication.feature.common.Result
-import com.rndeveloper.myapplication.feature.common.ShowResult
-import com.rndeveloper.myapplication.domain.weather.model.DailyForecast
-import com.rndeveloper.myapplication.domain.weather.model.Weather
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -51,14 +51,36 @@ fun ForecastScreen(
     vm: ForecastViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
-    val state by vm.uiState.collectAsState()
+    val state by vm.state.collectAsState()
+    ForecastScreen(state = state, onBack = onBack)
+}
 
-    state.weather.ShowResult {
-        (state.weather as Result.Success<Weather>).data.forecast.let { forecast ->
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ForecastScreen(
+    state: ForecastViewModel.UiState,
+    onBack: () -> Unit = {}
+) {
+
+    when (val weatherResult = state.weather) {
+        is Result.Success -> {
+            val forecast = weatherResult.data.forecast
             ForecastContent(
                 cityName = state.cityName,
                 forecast = forecast,
                 onBack = onBack,
+            )
+        }
+
+        is Result.Error -> {
+            ErrorText(error = weatherResult.exception)
+        }
+
+        is Result.Loading -> {
+            LoadingAnimation(
+                stringResource(R.string.forecast_text_obtaining_forecast_data),
+                modifier = Modifier.fillMaxSize()
             )
         }
     }
