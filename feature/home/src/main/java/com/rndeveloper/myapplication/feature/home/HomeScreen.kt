@@ -3,8 +3,10 @@ package com.rndeveloper.myapplication.feature.home
 import android.Manifest
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,10 +31,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -220,41 +225,43 @@ fun HomeContent(
         contentWindowInsets = WindowInsets.safeDrawing
     ) { paddingValues ->
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onTap = { keyboardController?.hide() }
-                    ) // Oculta el teclado al tocar fuera
-                },
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            FavCitiesContent(
-                favCities = favCities,
-                selectedCity = selectedCity,
-                onAction = onAction
-            )
-            SearchContent(
-                keyboardController = keyboardController,
-                favCities = favCities,
-                searchedCities = searchedCities,
-                onAction = onAction
-            )
-            Spacer(modifier = Modifier.height(40.dp))
-            WeatherMainContent(
-                weatherDescription = weatherDescription,
-                weatherIcon = weatherIcon,
-                temperature = temperature
-            )
-            Spacer(modifier = Modifier.height(25.dp))
-            WeatherDetailsContent(
-                humidity = humidity,
-                windSpeed = windSpeed,
-                precipitation = precipitation
-            )
+        Box(modifier = Modifier.fillMaxSize(),) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp)
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onTap = { keyboardController?.hide() }
+                        ) // Oculta el teclado al tocar fuera
+                    },
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                FavCitiesContent(
+                    favCities = favCities,
+                    selectedCity = selectedCity,
+                    onAction = onAction
+                )
+                SearchContent(
+                    keyboardController = keyboardController,
+                    favCities = favCities,
+                    searchedCities = searchedCities,
+                    onAction = onAction
+                )
+                Spacer(modifier = Modifier.height(40.dp))
+                WeatherMainContent(
+                    weatherDescription = weatherDescription,
+                    weatherIcon = weatherIcon,
+                    temperature = temperature
+                )
+                Spacer(modifier = Modifier.height(25.dp))
+                WeatherDetailsContent(
+                    humidity = humidity,
+                    windSpeed = windSpeed,
+                    precipitation = precipitation
+                )
+            }
         }
     }
 }

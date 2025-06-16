@@ -1,9 +1,7 @@
 package com.rndeveloper.myapplication
 
-import android.util.Log
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
@@ -12,22 +10,14 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.printToLog
 import androidx.test.rule.GrantPermissionRule
-import com.rndeveloper.myapplication.data.location.datasources.CityRemoteDataSource
 import com.rndeveloper.myapplication.data.server.MockWebServerRule
 import com.rndeveloper.myapplication.data.server.fromJson
-import com.rndeveloper.myapplication.data.weather.WeatherRemoteDataSource
-import com.rndeveloper.myapplication.feature.common.LOADING_ANIMATION_TAG
 import com.rndeveloper.myapplication.feature.home.FLOATING_ACTION_BUTTON_TAG
-import com.rndeveloper.myapplication.framework.location.local.FavCityDao
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import jakarta.inject.Inject
-import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.RecordedRequest
-import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -40,10 +30,10 @@ import org.junit.Test
 @HiltAndroidTest
 class MainInstrumentedTest {
 
-    @get:Rule(order = 0) // HiltRule primero
+    @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 
-    @get:Rule(order = 1) // MockWebServerRule después
+    @get:Rule(order = 1)
     val mockWebServerRule = MockWebServerRule()
 
 

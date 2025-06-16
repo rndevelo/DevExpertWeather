@@ -4,7 +4,9 @@ import kotlinx.serialization.Serializable
 import com.rndeveloper.myapplication.domain.location.City
 
 @Serializable
-data class GeoCodingResponse(val results: List<RemoteCity>)
+data class GeoCodingResponse(
+    val results: List<RemoteCity> = emptyList()
+)
 
 @Serializable
 data class RemoteCity(

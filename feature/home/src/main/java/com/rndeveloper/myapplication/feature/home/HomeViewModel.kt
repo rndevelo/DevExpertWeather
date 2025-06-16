@@ -44,7 +44,7 @@ class HomeViewModel @Inject constructor(
     private val getCityFromLocationGPSUseCase: GetFromLocationCityUseCase
 ) : ViewModel() {
 
-    // 🔍 Ciudades buscadas (ahora accesible desde la UI)
+    // 🔍 Searched Cities
     private val _searchedCitiesState = MutableStateFlow<List<City>>(emptyList())
     val searchedCitiesState: StateFlow<List<City>> = _searchedCitiesState.asStateFlow()
 
