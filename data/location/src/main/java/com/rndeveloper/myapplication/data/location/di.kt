@@ -12,10 +12,8 @@ import dagger.hilt.components.SingletonComponent
 internal abstract class DataLocationBindsModule {
 
     @Binds
-    abstract fun bindRegionDataSource(impl: RegionRepositoryImpl): RegionRepository
+    abstract fun bindRegionRepository(impl: RegionRepositoryImpl): RegionRepository
 
     @Binds
-    abstract fun bindLocationDataSource(impl: CityRepositoryImpl): CityRepository
-
-
+    abstract fun bindCityRepository(impl: CityRepositoryImpl): CityRepository
 }

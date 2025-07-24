@@ -36,7 +36,6 @@ class MainInstrumentedTest {
     @get:Rule(order = 1)
     val mockWebServerRule = MockWebServerRule()
 
-
     @get:Rule(order = 2)
     val locationPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(
         "android.permission.ACCESS_COARSE_LOCATION"
